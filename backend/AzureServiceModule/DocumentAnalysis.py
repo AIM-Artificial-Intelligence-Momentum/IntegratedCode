@@ -3,13 +3,14 @@ from azure.ai.formrecognizer import DocumentAnalysisClient
 import os
 from dotenv import load_dotenv
 
+# PDF파일을 입력하면 텍스트를 추출하는 기능
 class DocumentAnalysis:
     def __init__(self):
         # .env 파일에서 환경 변수를 로드
         load_dotenv()
 
         # .env 파일에 저장된 DOCUMENT_ANALYSIS_KEY를 환경 변수로 불러오기
-        self.endpoint_doc = "https://6b028-document.cognitiveservices.azure.com/"
+        self.endpoint_doc = os.getenv("DOCUMENT_ANALYSIS_END")
         self.key_doc = os.getenv("DOCUMENT_ANALYSIS_KEY")
 
         if self.key_doc is None:

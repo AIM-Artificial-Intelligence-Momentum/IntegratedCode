@@ -2,3 +2,5 @@
 .env
 # 가상환경 폴더 무시
 myenv/
+__pycache__
+*.pyc
