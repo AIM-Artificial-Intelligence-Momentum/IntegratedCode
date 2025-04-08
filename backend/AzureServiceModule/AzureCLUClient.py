@@ -3,7 +3,7 @@ from azure.ai.language.conversations import ConversationAnalysisClient
 import os
 from dotenv import load_dotenv
 
-class CLUAnalysis:
+class AzureCLUClient:
     def __init__(self):
         load_dotenv()
 
