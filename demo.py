@@ -2,6 +2,9 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from routes import ChatbotAPI, AnalysisAPI, KopisDataAPI
 from fastapi.staticfiles import StaticFiles
+from routes import CLUAnalysisAPI
+
+
 app = FastAPI()
 
 # CORS 허용 (프론트에서 접근 가능하게)
@@ -18,6 +21,7 @@ app.add_middleware(
 app.include_router(ChatbotAPI.router, prefix="/api/chatbot")
 app.include_router(AnalysisAPI.router, prefix="/api/analysis")
 app.include_router(KopisDataAPI.router, prefix="/api/kopisdata")
+app.include_router(CLUAnalysisAPI.router, prefix="/api/clu")
 
 # 정적 파일 (D3.js 포함 프론트엔드)
 app.mount("/", StaticFiles(directory="frontend", html=True), name="frontend")
