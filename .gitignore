@@ -4,3 +4,28 @@
 myenv/
 __pycache__
 *.pyc
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+*.sqlite3
+
+# Jupyter
+.ipynb_checkpoints/
+
+# Virtual Envs
+venv/
+.venv/
+
+# VS Code
+.vscode/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Python virtual environments
+venv/
+venv*/   
