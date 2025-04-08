@@ -9,10 +9,10 @@ from dotenv import load_dotenv
 # 대안 1 : Azure 대신 KoNLPy, Okt로 키워드 추출하기 
 # 대안 2 : GPT로 번역해서 넘기기 
 class TextAnalytics:
-    def __init__(self):
+    def __init__(self): 
         load_dotenv()
 
-        self.endpoint_text = "https://6b028.cognitiveservices.azure.com/"
+        self.endpoint_text = os.getenv("TEXT_ANALYTICS_ENDPOINT")
         self.key_text = os.getenv("TEXT_ANALYTICS_KEY")
 
         if self.key_text is None:
