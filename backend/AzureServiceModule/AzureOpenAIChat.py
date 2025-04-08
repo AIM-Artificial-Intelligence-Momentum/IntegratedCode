@@ -15,42 +15,31 @@ class AzureOpenAIChat:
             'api-key': self.api_key
         }
 
-    def chatgpt_response(self, prompt, history):
-        # print(prompt, history)
-        headers = {
-            'Content-Type': 'application/json',
-            'api-key': self.api_key 
-        }
+    def run_conversation(self, prompt: str, history: list = [], system_prompt: str = None) -> str:
         messages = []
-        messages.append(
-            {
-                    "role": "system",
-                    "content": [
-                        {
-                            "type": "text",
-                            "text": "You are an AI assistant that helps find information!"
-                        }
-                    ]
-            },
-        )
-        if len(history)>0:
-            for text in history[0]:
-                messages.append({
-                    "role":"assistant",
-                    "content":[{
-                        "type":"text",
-                        "text":text
-                    }]
-                })
+
+        # 1. 시스템 프롬프트 설정
+        if system_prompt:
+            messages.append({
+                "role": "system",
+                "content": system_prompt
+            })
+        else:
+            messages.append({
+                "role": "system",
+                "content": "You are an AI assistant that helps find information!"
+            })
+
+        # 2. 기존 대화 이력 추가
+        for entry in history:
+            messages.append(entry)
+
+        # 3. 사용자 입력 추가
         messages.append({
-            "role":"user",
-            "content":[
-                {
-                    "type":"text",
-                    "text":prompt
-                }
-            ]
+            "role": "user",
+            "content": prompt
         })
+
         payload = {
             "messages": messages,
             "temperature": 0.7,
@@ -58,14 +47,9 @@ class AzureOpenAIChat:
             "max_tokens": 4096
         }
 
-        response = requests.post(
-            self.endpoint,
-            headers=headers,
-            json=payload
-        )
+        response = requests.post(self.endpoint, headers=self.headers, json=payload)
 
         result = response.json()
         bot_response = result['choices'][0]['message']['content'].strip()
-        history.append({"role": "user", "content": prompt})
-        history.append({"role": "assistant", "content": bot_response})
-        return '', history
+
+        return bot_response

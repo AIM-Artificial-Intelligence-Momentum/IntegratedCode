@@ -1,9 +1,7 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from routes import ChatbotAPI, AnalysisAPI, KopisDataAPI
 from fastapi.staticfiles import StaticFiles
 from routes import CLUAnalysisAPI
-
 
 app = FastAPI()
 
@@ -18,9 +16,6 @@ app.add_middleware(
 
 # routes/analysis.py 파일 안에서 router = APIRouter()로 정의된 라우터 객체
 # prefix="/api/analysis" : 이 라우터의 모든 경로 앞에 자동으로 /api/analysis가 붙음
-app.include_router(ChatbotAPI.router, prefix="/api/chatbot")
-app.include_router(AnalysisAPI.router, prefix="/api/analysis")
-app.include_router(KopisDataAPI.router, prefix="/api/kopisdata")
 app.include_router(CLUAnalysisAPI.router, prefix="/api/clu")
 
 # 정적 파일 (D3.js 포함 프론트엔드)
