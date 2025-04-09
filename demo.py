@@ -4,7 +4,7 @@ from fastapi.staticfiles import StaticFiles
 from routes import CLUAnalysisAPI
 from routes import MLAnalysisAPI
 
-app = FastAPI()
+app = FastAPI(docs_url="/api/docs")
 
 # CORS 허용 (프론트에서 접근 가능하게)
 app.add_middleware(
