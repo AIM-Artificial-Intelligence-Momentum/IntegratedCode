@@ -24,7 +24,7 @@ class AccSalesInput(BaseModel):
     start_date_numeric: float = 1
     capacity: float = 502000.5
     star_power: float = 280.0
-    ticket_price: float = = 40439.5
+    ticket_price: float = 40439.5
     marketing_budget: float = 8098512.5
     sns_mention_count: float = 38.0
     daily_sales: float = 2.0
