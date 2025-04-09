@@ -22,4 +22,4 @@ app.include_router(CLUAnalysisAPI.router, prefix="/api/clu")
 app.include_router(MLAnalysisAPI.router, prefix="/api/ml")
 
 # 정적 파일 (D3.js 포함 프론트엔드)
-app.mount("/", StaticFiles(directory="frontend", html=True), name="frontend")
+app.mount("/static", StaticFiles(directory="frontend", html=True), name="frontend")
