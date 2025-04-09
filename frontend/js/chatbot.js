@@ -42,8 +42,6 @@ async function sendMessage() {
     console.log(entityMsg)
     console.log(botReply)
 
-    if (intentMsg) appendMessage("📡 System", intentMsg);
-    if (entityMsg) appendMessage("📡 System", entityMsg);
     appendMessage("🤖 Bot", botReply);
   } catch (err) {
     console.error(err);

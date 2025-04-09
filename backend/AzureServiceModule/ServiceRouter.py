@@ -21,7 +21,7 @@ class ServiceRouter:
         return {
             "intent": intent,
             "entities": entities,
-            "response": gpt_result
+            "response": gpt_result 
         }
 
     def _get_system_prompt(self, intent: str, entities: list) -> str:
