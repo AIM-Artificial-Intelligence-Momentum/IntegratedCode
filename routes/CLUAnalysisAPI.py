@@ -13,5 +13,5 @@ async def route_by_intent(request: Request):
     if not user_input:
         return {"error": "입력값이 비어 있습니다."}
 
-    result = router_service.handle_user_input(user_input, history)
+    result = router_service.handle_user_input(user_input)
     return result

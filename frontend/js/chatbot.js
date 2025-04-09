@@ -31,17 +31,13 @@ async function sendMessage() {
     });
 
     if (!response.ok) throw new Error("서버 응답 오류");
-    console.log(response.text)
     const data = await response.json();
 
-    // 응답 구성: intent, entities, response
-    const intentMsg = `intent: ${data.intent}`;
-    const entityMsg = data.entities.length ? `entities: ${data.entities.join(", ")}` : "";
-    const botReply = `🤖 ${data.response}`;
-    console.log(intentMsg)
-    console.log(entityMsg)
-    console.log(botReply)
-
+    const botReply = `🤖 ${data.response.bot_message}`;
+    console.log(`🤖 ${JSON.stringify(data.response)}`);
+    console.log("intent:", data.intent);
+    console.log("entities:", JSON.stringify(data.entities));
+    
     appendMessage("🤖 Bot", botReply);
   } catch (err) {
     console.error(err);
