@@ -7,7 +7,7 @@ import numpy as np
 
 # analysis_module.py를 import
 # (※ 경로 주의: 폴더 구조에 따라 from ..analysis_module import ... 등 사용)
-from analysis_module import (
+from backend.ModelPredictionModule.analysis_module import (
     predict_accumulated_sales,
     predict_roi_bep,
     predict_ticket_risk,
@@ -15,7 +15,6 @@ from analysis_module import (
 )
 
 router = APIRouter()
-
 # ------------------------------------------
 # 1) 회귀: 관객 수 예측
 # ------------------------------------------

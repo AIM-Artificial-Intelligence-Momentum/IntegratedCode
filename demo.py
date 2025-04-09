@@ -2,6 +2,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 from routes import CLUAnalysisAPI
+from routes import MLAnalysisAPI
 
 app = FastAPI()
 
@@ -18,7 +19,7 @@ app.add_middleware(
 # prefix="/api/analysis" : 이 라우터의 모든 경로 앞에 자동으로 /api/analysis가 붙음
 app.include_router(CLUAnalysisAPI.router, prefix="/api/clu")
 
-app.include_router(MLAnalysis.router, prefix="/api/ml")
+app.include_router(MLAnalysisAPI.router, prefix="/api/ml")
 
 # 정적 파일 (D3.js 포함 프론트엔드)
 app.mount("/", StaticFiles(directory="frontend", html=True), name="frontend")
