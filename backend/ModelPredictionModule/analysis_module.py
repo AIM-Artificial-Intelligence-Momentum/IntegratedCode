@@ -33,7 +33,7 @@ def predict_accumulated_sales(input_data: List[dict]) -> np.ndarray:
 # 2) 회귀: 손익 예측 (ROI, BEP)
 # ---------------------------
 def predict_roi_bep(input_data: List[dict]) -> np.ndarray:
-    model = load_model("rf_reg_roi_bep")
+    model = load_model("xgb_reg_roi_bep")
     df = pd.DataFrame(input_data)
     preds = model.predict(df)  # 다중 출력인 경우 (n_samples, 2) 형태
     return preds

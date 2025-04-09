@@ -1,7 +1,6 @@
 const chatbox = document.getElementById("chatbox");
 const userInput = document.getElementById("userInput");
 
-
 // 메시지 추가 함수
 function appendMessage(sender, text) {
   const message = document.createElement("div");
@@ -23,24 +22,26 @@ async function sendMessage() {
     const response = await fetch("/api/clu/route", {
       method: "POST",
       headers: {
-        "Content-Type": "application/json"
+        "Content-Type": "application/json",
       },
       body: JSON.stringify({
         input: message,
-      })
+      }),
     });
 
     if (!response.ok) throw new Error("서버 응답 오류");
-    console.log(response.text)
+    console.log(response.text);
     const data = await response.json();
 
     // 응답 구성: intent, entities, response
     const intentMsg = `intent: ${data.intent}`;
-    const entityMsg = data.entities.length ? `entities: ${data.entities.join(", ")}` : "";
+    const entityMsg = data.entities.length
+      ? `entities: ${data.entities.join(", ")}`
+      : "";
     const botReply = `🤖 ${data.response}`;
-    console.log(intentMsg)
-    console.log(entityMsg)
-    console.log(botReply)
+    console.log(intentMsg);
+    console.log(entityMsg);
+    console.log(botReply);
 
     appendMessage("🤖 Bot", botReply);
   } catch (err) {

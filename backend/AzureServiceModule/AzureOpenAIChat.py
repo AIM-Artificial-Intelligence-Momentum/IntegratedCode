@@ -17,6 +17,7 @@ class AzureOpenAIChat:
     def run_conversation(self, prompt: str, history: list = None, system_prompt: str = None) -> dict:
         if history is None:
             history = []
+        print(history)
 
         messages = []
 
