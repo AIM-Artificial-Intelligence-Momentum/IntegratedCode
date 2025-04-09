@@ -1,10 +1,39 @@
 from backend.AzureServiceModule.AzureCLUClient import AzureCLUClient
 from backend.AzureServiceModule.AzureOpenAIChat import AzureOpenAIChat
+import json
+import re
+from typing import Optional
 
 class ServiceRouter:
     def __init__(self):
         self.clu = AzureCLUClient()
         self.gpt = AzureOpenAIChat()
+
+    def extract_json_from_last_message(self, gpt_result: dict) -> Optional[dict]:
+        """GPT 응답 중 마지막 assistant 메시지에서 JSON 형식이 있다면 파싱해서 반환. 없거나 파싱 실패 시 None 반환."""
+        try:
+            # 마지막 assistant 메시지 찾기
+            assistant_messages = [
+                msg["content"] for msg in gpt_result.get("chat_history", [])
+                if msg.get("role") == "assistant"
+            ]
+            if not assistant_messages:
+                return None
+            last_message = assistant_messages[-1]
+            # 중괄호 포함된 JSON 블록 탐지 (```json ... ``` 또는 그냥 {...})
+            json_blocks = re.findall(r'```(?:json)?\s*({[\s\S]*?})\s*```|({[\s\S]*?})', last_message)
+
+            for block in json_blocks:
+                raw_json = block[0] or block[1]  # 그룹 중 하나는 빈 문자열일 수 있음
+                try:
+                    return json.loads(raw_json)
+                except json.JSONDecodeError:
+                    continue
+            return None  # 못 찾은 경우
+        
+        except Exception as e:
+            print(f"JSON 추출 중 오류 발생: {e}")
+            return None
 
     def handle_user_input(self, user_input: str) -> dict:
         # CLU 분석
@@ -20,14 +49,17 @@ class ServiceRouter:
 
         # GPT 응답 생성
         gpt_result = self.gpt.run_conversation(prompt=user_input, history=[], system_prompt=system_prompt)
-
+        parsed_json = self.extract_json_from_last_message(gpt_result)
+        print(parsed_json)
         return {
             "intent": intent,
             "entities": entities,
-            "response": gpt_result 
+            "response": gpt_result,
+            "json" : parsed_json
         }
-
+    
     def _get_system_prompt(self, intent: str, entities: list) -> str:
+        "인텐트와 엔티티에 따른 프롬프트 조정 함수"
         basic_prompt = (
             f"당신은 공연 기획 전문가이자 친절한 챗봇입니다. "
             f"사용자의 의도는 '{intent}'이고, 현재까지 추출된 정보는 다음과 같습니다: {entities}.\n"
@@ -52,10 +84,10 @@ class ServiceRouter:
                 "예매 관련 플랫폼 링크나 절차도 함께 알려주면 좋아요."
             )
 
-        elif intent == "공연_수익_예측":
+        elif intent == "ProfitPrediction":
             return basic_prompt + (
                 "\n공연 수익을 예측하기 위해 필요한 정보(예: 관객 수, 티켓 가격, 회차 수, 대관료 등)를 확인하고 부족한 정보를 질문해 주세요.\n"
-                "수익 예측을 위한 간단한 계산도 가능하다면 제공해 주세요."
+                "출력은 JSON 형태로 해야합니다."
             )
 
         else:
