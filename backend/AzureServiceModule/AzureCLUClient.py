@@ -2,7 +2,7 @@ import requests
 import os
 from dotenv import load_dotenv
 
-class AzureCLUClientREST:
+class AzureCLUClient:
     def __init__(self):
         load_dotenv()
 
