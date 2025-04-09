@@ -19,6 +19,7 @@ class AzureCLUClient:
     def analyze(self, user_input: str) -> dict:
         headers = {
             "Ocp-Apim-Subscription-Key": self.api_key,
+            
             "Content-Type": "application/json"
         }
 
@@ -52,24 +53,3 @@ class AzureCLUClient:
         return result["result"]["prediction"].get("entities", [])
 
 
-# ✅ 실행 테스트 (깔끔한 출력 전용)
-if __name__ == "__main__":
-    client = AzureCLUClient()
-    user_input = "9월에 서울에서 연극을 기획하고 싶어"
-
-    try:
-        result = client.analyze(user_input)
-        intent = client.get_top_intent(result)
-        entities = client.get_entities(result)
-
-        print(f"\n✅ 예측된 인텐트: {intent}")
-
-        if entities:
-            print("\n🔍 추출된 엔터티:")
-            for e in entities:
-                print(f"  - [{e['category']}] '{e['text']}' (신뢰도: {e['confidenceScore']:.2f})")
-        else:
-            print("⚠️ 엔터티 없음")
-
-    except Exception as e:
-        print(f"❌ 오류 발생: {e}")
