@@ -20,17 +20,17 @@ router = APIRouter()
 # ------------------------------------------
 class AccSalesInput(BaseModel):
     genre: str
-    region: str
-    start_date_numeric: float
-    capacity: float
-    star_power: float
-    ticket_price: float
-    marketing_budget: float
-    sns_mention_count: float
-    daily_sales: float
-    booking_rate: float
-    ad_exposure: float
-    sns_mention_daily: float
+    region: str = "서울특별시"
+    start_date_numeric: float = 1
+    capacity: float = 502000.5
+    star_power: float = 280.0
+    ticket_price: float = = 40439.5
+    marketing_budget: float = 8098512.5
+    sns_mention_count: float = 38.0
+    daily_sales: float = 2.0
+    booking_rate: float = 0.7
+    ad_exposure: float = 303284.5
+    sns_mention_daily: float = 38.0
 
 @router.post("/accumulated_sales")
 def api_predict_accumulated_sales(inputs: List[AccSalesInput]):
@@ -43,12 +43,12 @@ def api_predict_accumulated_sales(inputs: List[AccSalesInput]):
 # 2) 회귀: 손익 예측 (ROI, BEP)
 # ------------------------------------------
 class ROI_BEP_Input(BaseModel):
-    production_cost: float
-    marketing_budget: float
-    ticket_price: float
-    capacity: float
-    variable_cost_rate: float
-    accumulated_sales: float
+    production_cost: float = 570111934.0
+    marketing_budget: float = 8098512.5
+    ticket_price: float = 40349.5
+    capacity: float = 280.0
+    variable_cost_rate: float = 0.17754999999999999
+    accumulated_sales: float = 105.0
 
 @router.post("/roi_bep")
 def api_predict_roi_bep(inputs: List[ROI_BEP_Input]):
@@ -62,15 +62,15 @@ def api_predict_roi_bep(inputs: List[ROI_BEP_Input]):
 # ------------------------------------------
 class TicketRiskInput(BaseModel):
     genre: str
-    region: str
-    start_date_numeric: float
-    capacity: float
-    star_power: float
-    daily_sales: float
-    accumulated_sales: float
-    ad_exposure: float
-    sns_mention_daily: float
-    promo_event_flag: int
+    region: str = "서울특별시"
+    start_date_numeric: float = "1"
+    capacity: float = "280.0"
+    star_power: float = "1" # default : 1
+    daily_sales: float = 2.0
+    accumulated_sales: float = 105.0
+    ad_exposure: float = 303284.5
+    sns_mention_daily: float = 0
+    promo_event_flag: int = 0.0
 
 @router.post("/ticket_risk")
 def api_predict_ticket_risk(inputs: List[TicketRiskInput]):
@@ -83,10 +83,10 @@ def api_predict_ticket_risk(inputs: List[TicketRiskInput]):
 # 4) 군집: 관객 세분화
 # ------------------------------------------
 class AudienceClusterInput(BaseModel):
-    recency_days: float
-    booking_count: float
-    total_amount: float
-    age: float
+    booking_count: float = 4.0
+    total_amount: float = 62675.5
+    age: float = 34.0
+    recency_days: float = 1
 
 @router.post("/audience_cluster")
 def api_predict_audience_cluster(inputs: List[AudienceClusterInput]):
