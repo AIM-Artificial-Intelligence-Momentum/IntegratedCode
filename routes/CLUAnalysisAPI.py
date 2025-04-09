@@ -1,6 +1,6 @@
 from fastapi import APIRouter, Request
 from backend.AzureServiceModule.AzureCLUClient import AzureCLUClient
-from backend.AzureServiceModule.AzureOpenAIChat import AzureOpenAIChat
+from backend.AzureServiceModule.backup.AzureOpenAIChat import AzureOpenAIChat
 
 router = APIRouter()
 clu_client = AzureCLUClient()
@@ -21,7 +21,19 @@ async def route_by_intent(request: Request):
 
     # 2. Intent 기반 분기 처리
     if intent == "공연_추천":
-        system_prompt = "사용자에게 공연을 추천하는 친절한 챗봇입니다. 사용자 요청을 반영해 자연스럽게 공연을 추천하세요."
+        system_prompt = """너는 사용자 의도를 CLU로 분석한 뒤 이에 맞춰 정확하고 풍부한 정보를 제공하는 GPT야.
+        사용자는 이런식으로 얘기를 할꺼야.
+        공연명: 
+        장소: 
+        일정:
+        유형:
+        타겟:
+        예상 관객 수:
+        예산:
+        상태:
+    사용자 인텐트는 '{intent}'이고, 엔터티는 {entities}야.
+    이를 바탕으로 자연스럽고 정확하게 안내해줘.
+    """
         response = chat_engine.run_conversation(user_input, [], system_prompt)
         return {"intent": intent, "entities": entities, "response": response}
 

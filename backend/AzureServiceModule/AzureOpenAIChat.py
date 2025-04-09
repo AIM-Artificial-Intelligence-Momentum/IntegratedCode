@@ -6,7 +6,6 @@ class AzureOpenAIChat:
     def __init__(self):
         load_dotenv()
 
-        # 환경 변수에서 Azure OpenAI API 정보 로드
         self.endpoint = os.getenv("AZURE_OPENAI_ENDPOINT")
         self.api_key = os.getenv("AZURE_OPENAI_API_KEY")
         self.deployment_name = os.getenv("DEPLOYMENT_NAME")
@@ -15,26 +14,22 @@ class AzureOpenAIChat:
             'api-key': self.api_key
         }
 
-    def run_conversation(self, prompt: str, history: list = [], system_prompt: str = None) -> str:
+    def run_conversation(self, prompt: str, history: list = None, system_prompt: str = None) -> dict:
+        if history is None:
+            history = []
+
         messages = []
 
-        # 1. 시스템 프롬프트 설정
-        if system_prompt:
-            messages.append({
-                "role": "system",
-                "content": system_prompt
-            })
-        else:
-            messages.append({
-                "role": "system",
-                "content": "You are an AI assistant that helps find information!"
-            })
+        # 시스템 프롬프트
+        messages.append({
+            "role": "system",
+            "content": system_prompt or "You are an AI assistant that helps find information!"
+        })
 
-        # 2. 기존 대화 이력 추가
-        for entry in history:
-            messages.append(entry)
+        # 이전 대화 히스토리 추가
+        messages.extend(history)
 
-        # 3. 사용자 입력 추가
+        # 사용자 입력 추가
         messages.append({
             "role": "user",
             "content": prompt
@@ -47,9 +42,38 @@ class AzureOpenAIChat:
             "max_tokens": 4096
         }
 
-        response = requests.post(self.endpoint, headers=self.headers, json=payload)
+        try:
+            response = requests.post(self.endpoint, headers=self.headers, json=payload)
+            response.raise_for_status()  # 상태 코드가 200이 아니면 예외 발생
 
-        result = response.json()
-        bot_response = result['choices'][0]['message']['content'].strip()
+            result = response.json()
 
-        return bot_response
+            if "choices" not in result or "message" not in result['choices'][0]:
+                return {
+                    "error": "GPT 응답 형식 오류",
+                    "chat_history": history
+                }
+
+            bot_response = result['choices'][0]['message']['content'].strip()
+
+            # 히스토리 업데이트
+            updated_history = history.copy()
+            updated_history.append({"role": "user", "content": prompt})
+            updated_history.append({"role": "assistant", "content": bot_response})
+
+            return {
+                "bot_message": bot_response,
+                "chat_history": updated_history
+            }
+
+        except requests.exceptions.RequestException as e:
+            return {
+                "error": f"[API 호출 오류] {str(e)}",
+                "chat_history": history
+            }
+
+        except ValueError:
+            return {
+                "error": "[응답 JSON 파싱 실패]",
+                "chat_history": history
+            }
