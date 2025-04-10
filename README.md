@@ -12,3 +12,6 @@ Next.js 13 App Router 기반 공연 기획 대시보드 예시
 ```bash
 npm install
 npm run dev
+
+## AISearch 연동 및 API 구축
+https://curly-cookie-e4a.notion.site/2-Project-1d14fa74154b80308403e8f09e14156b
