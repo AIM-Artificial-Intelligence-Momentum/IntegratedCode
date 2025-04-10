@@ -1,4 +1,4 @@
-from backend.AzureServiceModule.AzureCLUClient import AzureCLUClient
+from IntegratedCode.backend.AzureServiceModule.backup.AzureCLUClient import AzureCLUClient
 from backend.AzureServiceModule.AzureOpenAIChat import AzureOpenAIChat
 import json
 import re
