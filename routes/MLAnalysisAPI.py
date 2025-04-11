@@ -10,7 +10,6 @@ from backend.ModelPredictionModule.analysis_module import (
     predict_roi_bep_planning,
     predict_roi_bep_selling,
     predict_ticket_risk,
-    predict_audience_cluster
 )
 
 router = APIRouter()
