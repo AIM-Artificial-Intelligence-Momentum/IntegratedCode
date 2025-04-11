@@ -67,13 +67,3 @@ def predict_ticket_risk(input_data: List[dict]) -> np.ndarray:
     df = pd.DataFrame(input_data)
     preds = model.predict(df)
     return preds
-
-# 6) 군집: 관객 세분화
-def predict_audience_cluster(input_data: List[dict]) -> np.ndarray:
-    """
-    모델 파일: kmeans_audience_seg.pkl
-    """
-    model = load_model("kmeans_audience_seg")
-    df = pd.DataFrame(input_data)
-    clusters = model.predict(df)
-    return clusters
