@@ -7,7 +7,6 @@ from analysis_module import (
     predict_roi_bep_planning,
     predict_roi_bep_selling,
     predict_ticket_risk,
-    predict_audience_cluster
 )
 
 # 1) 관객 수 예측 - 기획 단계
@@ -81,15 +80,15 @@ dummy_ticket_risk_input = [
     }
 ]
 
-# 6) 군집: 관객 세분화
-dummy_audience_cluster_input = [
-    {
-        "booking_count": 5,
-        "total_amount": 500000,
-        "age": 35,
-        "recency_days": 30
-    }
-]
+# # 6) 군집: 관객 세분화
+# dummy_audience_cluster_input = [
+#     {
+#         "booking_count": 5,
+#         "total_amount": 500000,
+#         "age": 35,
+#         "recency_days": 30
+#     }
+# ]
 
 # -------------------------------------------
 # 테스트 실행
@@ -115,6 +114,3 @@ print("\n=== (분류) 티켓 판매 위험 예측 - 판매 단계 ===")
 res5 = predict_ticket_risk(dummy_ticket_risk_input)
 pprint.pprint(res5)
 
-print("\n=== (군집) 관객 세분화 ===")
-res6 = predict_audience_cluster(dummy_audience_cluster_input)
-pprint.pprint(res6)
