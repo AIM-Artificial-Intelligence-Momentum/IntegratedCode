@@ -10,7 +10,11 @@ from backend.ModelPredictionModule.analysis_module import (
     predict_roi_bep_planning,
     predict_roi_bep_selling,
     predict_ticket_risk,
+    get_genre_stats,
+    get_regional_stats,
+    get_venue_scale_stats
 )
+
 
 router = APIRouter()
 
@@ -33,7 +37,6 @@ def api_predict_acc_sales_planning(inputs: List[AccSalesPlanningInput]):
     input_data = [inp.dict() for inp in inputs]
     preds = predict_acc_sales_planning(input_data)
     return {"predictions": np.array(preds).tolist()}
-
 
 # ------------------------------------------
 # 2) 회귀: 관객 수 예측 - 판매 단계
@@ -117,3 +120,20 @@ def api_predict_ticket_risk(inputs: List[TicketRiskInput]):
     return {"risk_labels": np.array(preds).tolist()}
 
 
+# ---------------------------
+# 집계(산업 추이) 시각화 API 엔드포인트
+# ---------------------------
+@router.get("/genre_stats")
+def api_get_genre_stats():
+    stats = get_genre_stats()
+    return stats
+
+@router.get("/regional_stats")
+def api_get_regional_stats():
+    stats = get_regional_stats()
+    return stats
+
+@router.get("/venue_scale_stats")
+def api_get_venue_scale_stats():
+    stats = get_venue_scale_stats()
+    return stats
