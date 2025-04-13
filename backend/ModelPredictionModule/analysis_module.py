@@ -1,10 +1,17 @@
+<<<<<<< HEAD
+=======
+# analysis_module.py
+>>>>>>> origin/main
 import os
 import joblib
 import pandas as pd
 import numpy as np
 from typing import List
+<<<<<<< HEAD
 from sklearn.metrics import roc_curve, precision_recall_curve
 from sklearn.preprocessing import label_binarize
+=======
+>>>>>>> origin/main
 
 FILE_DIR = os.path.dirname(__file__)
 MODEL_DIR = os.path.join(FILE_DIR, "models")
@@ -18,6 +25,7 @@ def load_model(model_name: str):
     model = joblib.load(model_path)
     return model
 
+<<<<<<< HEAD
 
 # 1) 회귀: 관객 수 예측 - 기획 단계
 def predict_acc_sales_planning(input_data: List[dict]) -> dict:
@@ -25,10 +33,17 @@ def predict_acc_sales_planning(input_data: List[dict]) -> dict:
     모델 파일: xgb_reg_accumulated_sales_planning.pkl
     - 기획 단계에서는 유사 공연 비교 데이터와 날짜별 누적 관객 추이(신뢰구간 포함) 등
       가상 데이터를 함께 반환합니다.
+=======
+# 1) 회귀: 관객 수 예측 - 기획 단계
+def predict_acc_sales_planning(input_data: List[dict]) -> np.ndarray:
+    """
+    모델 파일: xgb_reg_accumulated_sales_planning.pkl
+>>>>>>> origin/main
     """
     model = load_model("xgb_reg_accumulated_sales_planning")
     df = pd.DataFrame(input_data)
     preds = model.predict(df)
+<<<<<<< HEAD
     
     comparison_data = [
         {"performance_id": 101, "performance_name": "뮤지컬 캣츠", "actual": 2800, "predicted": float(preds[0])},
@@ -68,10 +83,19 @@ def predict_acc_sales_selling(input_data: List[dict]) -> dict:
     모델 파일: xgb_reg_accumulated_sales_selling.pkl
     - 판매 단계에서는 실제 판매 데이터와 예측 데이터를 비교할 수 있는
       시계열 데이터, 좌석 수 산점도, 유사 공연 비교 데이터를 가상으로 생성합니다.
+=======
+    return preds
+
+# 2) 회귀: 관객 수 예측 - 판매 단계
+def predict_acc_sales_selling(input_data: List[dict]) -> np.ndarray:
+    """
+    모델 파일: xgb_reg_accumulated_sales_selling.pkl
+>>>>>>> origin/main
     """
     model = load_model("xgb_reg_accumulated_sales_selling")
     df = pd.DataFrame(input_data)
     preds = model.predict(df)
+<<<<<<< HEAD
     
     time_series_data = {
         "dates": ["2025-06-01", "2025-06-02", "2025-06-03", "2025-06-04"],
@@ -105,10 +129,19 @@ def predict_roi_bep_planning(input_data: List[dict]) -> dict:
     """
     모델 파일: xgb_reg_roi_bep_planning.pkl
     - 기획 단계에서는 예측된 ROI와 BEP와 함께, 총매출, 총비용 등 파생 지표를 가상으로 반환합니다.
+=======
+    return preds
+
+# 3) 회귀: 손익 예측(ROI, BEP) - 기획 단계
+def predict_roi_bep_planning(input_data: List[dict]) -> np.ndarray:
+    """
+    모델 파일: xgb_reg_roi_bep_planning.pkl
+>>>>>>> origin/main
     """
     model = load_model("xgb_reg_roi_bep_planning")
     df = pd.DataFrame(input_data)
     preds = model.predict(df)
+<<<<<<< HEAD
     
     roi_bep_detail = {
         "total_revenue": 35000000,
@@ -139,10 +172,19 @@ def predict_roi_bep_selling(input_data: List[dict]) -> dict:
     """
     모델 파일: xgb_reg_roi_bep_selling.pkl
     - 판매 단계에서는 실제 판매 데이터와 예측 손익 지표를 비교할 수 있는 추가 가상 데이터를 포함하여 반환합니다.
+=======
+    return preds
+
+# 4) 회귀: 손익 예측(ROI, BEP) - 판매 단계
+def predict_roi_bep_selling(input_data: List[dict]) -> np.ndarray:
+    """
+    모델 파일: xgb_reg_roi_bep_selling.pkl
+>>>>>>> origin/main
     """
     model = load_model("xgb_reg_roi_bep_selling")
     df = pd.DataFrame(input_data)
     preds = model.predict(df)
+<<<<<<< HEAD
     
     comparison_data = {
         "actual": {
@@ -221,10 +263,19 @@ def predict_ticket_risk(input_data: List[dict]) -> dict:
       현실적인 공연명 및 비교 데이터를 반환합니다.
     - 추가로 ground truth가 있는 평가 데이터셋(ticker_risk_ground_truth.csv)을 활용해
       ROC, PR Curve 데이터를 산출하여 시각화에 필요한 평가 데이터를 함께 반환합니다.
+=======
+    return preds
+
+# 5) 분류: 티켓 판매 위험 예측 - 판매 단계
+def predict_ticket_risk(input_data: List[dict]) -> np.ndarray:
+    """
+    모델 파일: rf_cls_ticket_risk.pkl
+>>>>>>> origin/main
     """
     model = load_model("rf_cls_ticket_risk")
     df = pd.DataFrame(input_data)
     preds = model.predict(df)
+<<<<<<< HEAD
     
     # 예측 확률 (predict_proba가 지원되는 경우)
     try:
@@ -370,3 +421,16 @@ def get_venue_scale_stats() -> dict:
         }
     }
     return result
+=======
+    return preds
+
+# 6) 군집: 관객 세분화
+def predict_audience_cluster(input_data: List[dict]) -> np.ndarray:
+    """
+    모델 파일: kmeans_audience_seg.pkl
+    """
+    model = load_model("kmeans_audience_seg")
+    df = pd.DataFrame(input_data)
+    clusters = model.predict(df)
+    return clusters
+>>>>>>> origin/main
