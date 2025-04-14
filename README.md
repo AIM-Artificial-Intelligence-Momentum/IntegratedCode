@@ -34,7 +34,8 @@ async def respond(request: Request):
         result = await chatbot_service.handle_user_input(user_input, history)
         return JSONResponse(content=result)
 ```
-- 프론트엔드에서 접근할 수 있는 형식 및 리턴값 
+- 프론트엔드에서 접근할 수 있는 형식 및 리턴값
+- 
  response.data.chat_history : 전체 사용자, 챗봇 히스토리 출력
 
  response.data.structured_data : 챗봇 응답만 출력
@@ -44,3 +45,6 @@ async def respond(request: Request):
  response.data.intent : 사용자 의도 분류(수집 / 검색 / 혼합)
  
  response.data.stage : 사용자가 있는 공연 단계(기획 / 판매)
+
+ *test.py로 챗봇 API를 테스트할 수 있습니다.
+
