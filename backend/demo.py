@@ -15,10 +15,6 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# routes/analysis.py 파일 안에서 router = APIRouter()로 정의된 라우터 객체
-# prefix="/api/analysis" : 이 라우터의 모든 경로 앞에 자동으로 /api/analysis가 붙음
-
 # app.include_router(MLAnalysisAPI.router, prefix="/api/ml")
-
-app.include_router(AISearchAPI.router, prefix="/api/aisearch")
+app.include_router(AISearchAPI.router, prefix="/api/chabot")
 
