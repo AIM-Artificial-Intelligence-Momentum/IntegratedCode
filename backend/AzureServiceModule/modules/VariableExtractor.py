@@ -1,5 +1,5 @@
 # AzureServiceModule/modules/VariableExtractor.py
-from AzureServiceModule.config.PromptConfig import get_variable_extractor
+from ..config.PromptConfig import get_variable_extractor
 import json
 import re
 

@@ -1,7 +1,7 @@
 import asyncio
 import os
 from dotenv import load_dotenv
-from AzureServiceModule.ChatbotService import ChatbotService
+from .AzureServiceModule.ChatbotService import ChatbotService
 
 load_dotenv()
 

@@ -30,7 +30,9 @@ class AccSalesPlanningInput(BaseModel):
     ticket_price: float = 40439.5
     marketing_budget: float = 8098512.5
     sns_mention_count: float = 38.0
-    # 판매 관련 동적 변수는 기획 단계에서는 미사용
+    
+    class Config:
+        extra = "ignore"  # 정의되지 않은 추가 필드는 무시합니다.
 
 @router.post("/accumulated_sales_planning")
 def api_predict_acc_sales_planning(inputs: List[AccSalesPlanningInput]):
@@ -55,6 +57,10 @@ class AccSalesSellingInput(BaseModel):
     ad_exposure: float = 303284.5
     sns_mention_daily: float = 38.0
 
+    class Config:
+        extra = "ignore"
+
+
 @router.post("/accumulated_sales_selling")
 def api_predict_acc_sales_selling(inputs: List[AccSalesSellingInput]):
     input_data = [inp.dict() for inp in inputs]
@@ -72,6 +78,10 @@ class ROI_BEP_PlanningInput(BaseModel):
     capacity: float = 280.0
     variable_cost_rate: float = 0.17755
     accumulated_sales: float = 105.0
+
+    class Config:
+        extra = "ignore"
+
 
 @router.post("/roi_bep_planning")
 def api_predict_roi_bep_planning(inputs: List[ROI_BEP_PlanningInput]):
@@ -91,6 +101,10 @@ class ROI_BEP_SellingInput(BaseModel):
     variable_cost_rate: float = 0.17755
     accumulated_sales: float = 105.0
 
+    class Config:
+        extra = "ignore"
+
+
 @router.post("/roi_bep_selling")
 def api_predict_roi_bep_selling(inputs: List[ROI_BEP_SellingInput]):
     input_data = [inp.dict() for inp in inputs]
@@ -106,12 +120,16 @@ class TicketRiskInput(BaseModel):
     region: str = "서울특별시"
     start_date_numeric: float = 1.0
     capacity: float = 280.0
-    star_power: float = 1.0  # 기본값: 1.0
+    star_power: float = 1.0
     daily_sales: float = 2.0
     accumulated_sales: float = 105.0
     ad_exposure: float = 303284.5
     sns_mention_daily: float = 0.0
     promo_event_flag: int = 0
+
+    class Config:
+        extra = "ignore"
+
 
 @router.post("/ticket_risk_selling")
 def api_predict_ticket_risk(inputs: List[TicketRiskInput]):

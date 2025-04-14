@@ -1,6 +1,6 @@
 # AzureServiceModule/modules/PromptGenerator.py
-from AzureServiceModule.config.VariableConfig import planning_stage_keys, sales_stage_keys
-from AzureServiceModule.config.PromptConfig import get_prompt_generator
+from ..config.VariableConfig import planning_stage_keys, sales_stage_keys
+from ..config.PromptConfig import get_prompt_generator
 
 class PromptGenerator:
     def __init__(self, client, deployment, categorical_keys):
