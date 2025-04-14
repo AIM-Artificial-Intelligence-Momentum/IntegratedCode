@@ -1,7 +1,7 @@
 # test_analysis.py
 
 import pprint
-from analysis_module import (
+from .analysis_module import (
     predict_acc_sales_planning,
     predict_acc_sales_selling,
     predict_roi_bep_planning,
