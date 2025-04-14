@@ -19,8 +19,7 @@ npm run dev
 ## 챗봇 API(/api/chatbot/response) 
 
 - api/chatbot/response 경로의 라우터입니다. 
-- 함수인자값
-### Request 요청(body에 user_input과 history가 담겨있어야 합니다.)
+- 함수인자값 : Request 요청(body에 user_input과 history가 담겨있어야 합니다.)
 ```bash
 @router.post("/response")
 async def respond(request: Request):
@@ -36,8 +35,8 @@ async def respond(request: Request):
         return JSONResponse(content=result)
 ```
 - 프론트엔드에서 접근할 수 있는 형식 및 리턴값 
-### response.data.chat_history : 전체 사용자, 챗봇 히스토리 출력 
-### response.data.structured_data : 챗봇 응답만 출력
-### response.data.response_text : 현재까지 모인 JSON 변수 
-### response.data.intent : 사용자 의도 분류(수집 / 검색 / 혼합)
-### response.data.stage : 사용자가 있는 공연 단계(기획 / 판매)
+ response.data.chat_history : 전체 사용자, 챗봇 히스토리 출력 
+ response.data.structured_data : 챗봇 응답만 출력
+ response.data.response_text : 현재까지 모인 JSON 변수
+ response.data.intent : 사용자 의도 분류(수집 / 검색 / 혼합)
+ response.data.stage : 사용자가 있는 공연 단계(기획 / 판매)
