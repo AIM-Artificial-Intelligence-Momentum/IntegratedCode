@@ -2,7 +2,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 # from routes  import MLAnalysisAPI
-from routes  import AISearchAPI
+from routes import ChatbotAPI
 
 app = FastAPI(docs_url="/api/docs")
 
@@ -16,5 +16,5 @@ app.add_middleware(
 )
 
 # app.include_router(MLAnalysisAPI.router, prefix="/api/ml")
-app.include_router(AISearchAPI.router, prefix="/api/chabot")
+app.include_router(ChatbotAPI.router, prefix="/api/chabot")
 
