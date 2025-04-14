@@ -60,6 +60,8 @@ class ChatbotService:
             "chat_history": history, # 전체 사용자, 챗봇 히스토리 출력 
             "response_text": full_reply, # 챗봇 응답만 출력
             "structured_data": self.collected_vars, # 모인 JSON 변수 
+            "intent" : intent, #  사용자 의도 분류: 수집 / 검색 / 혼합
+            "stage" : stage
         }
 # 'structured_data': 
 # {'genre': ' 뮤지컬', 
