@@ -6,6 +6,8 @@ from typing import List
 from sklearn.metrics import roc_curve, precision_recall_curve
 from sklearn.preprocessing import label_binarize
 
+from backend.AzureServiceModule.AzureSQLClient import execute_query
+
 FILE_DIR = os.path.dirname(__file__)
 MODEL_DIR = os.path.join(FILE_DIR, "models")
 
@@ -299,36 +301,101 @@ def predict_ticket_risk(input_data: List[dict]) -> dict:
         "evaluation_curves": evaluation_curves
     }
 
+# ----------
+# 집계 시각화 데이터 호출 및 전처리
+# ----------
+
+# # 1. 장르별 통계 집계 함수
+# def get_genre_stats() -> dict:
+#     """
+#     Azure SQL의 dbo.genre_stats_tb 테이블에서 집계 데이터를 불러온 후 전처리하고 JSON 형식으로 반환합니다.
+#     컬럼: '장르' -> 'genre', '개막편수' -> 'performance_count', '관객수' -> 'audience',
+#           '매출액' -> 'ticket_revenue', '상연횟수' -> 'show_count'
+#     '합계' 등 불필요한 행은 제거 후, 장르별 그룹합계를 계산합니다.
+#     """
+#     query = "SELECT * FROM dbo.genre_stats_tb"
+#     df = execute_query(query)
+#     df.rename(columns={
+#         "장르": "genre",
+#         "개막편수": "performance_count",
+#         "관객수": "audience",
+#         "매출액": "ticket_revenue",
+#         "상연횟수": "show_count",
+#         "매출액점유율": "revenue_share",
+#         "관객점유율": "audience_share"
+#     }, inplace=True)
+#     df = df[df["genre"].notnull() & (df["genre"] != "합계")]
+#     grouped = df.groupby("genre").sum(numeric_only=True).reset_index()
+#     return {
+#         "genre_stats": {
+#             "genre": grouped["genre"].tolist(),
+#             "performance_count": grouped["performance_count"].tolist(),
+#             "audience": grouped["audience"].tolist(),
+#             "ticket_revenue": grouped["ticket_revenue"].tolist()
+#         }
+#     }
+
+# # 2. 지역별 통계 집계 함수
+# def get_regional_stats() -> dict:
+#     query = "SELECT * FROM dbo.region_stats_tb"
+#     df = execute_query(query)
+#     df.rename(columns={
+#         "지역명": "region",
+#         "공연건수": "performance_count",
+#         "상연횟수": "show_count",
+#         "총티켓판매수": "total_ticket_sales",
+#         "총티켓판매액": "total_ticket_revenue"
+#     }, inplace=True)
+#     df = df[df["region"].notnull() & (df["region"] != "합계")]
+#     top5 = df.sort_values(by="performance_count", ascending=False).head(5)
+#     return {
+#         "regional_stats": {
+#             "region": top5["region"].tolist(),
+#             "performance_count": top5["performance_count"].tolist(),
+#             "show_count": top5["show_count"].tolist(),
+#             "total_ticket_sales": top5["total_ticket_sales"].tolist(),
+#             "total_ticket_revenue": top5["total_ticket_revenue"].tolist()
+#         }
+#     }
+
+# # 3. 공연장 규모별 통계 집계 함수
+# def get_venue_scale_stats() -> dict:
+#     query = "SELECT * FROM dbo.facility_stats_tb"
+#     df = execute_query(query)
+#     df.rename(columns={
+#         "연도": "year",
+#         "규모": "scale",
+#         "공연건수": "performance_count",
+#         "총티켓판매수": "total_ticket_sales"
+#     }, inplace=True)
+#     df = df[df["year"].notnull() & df["scale"].notnull()]
+#     grouped = df.groupby(["year", "scale"]).sum(numeric_only=True).reset_index()
+#     return {
+#         "venue_scale_stats": {
+#             "year": grouped["year"].tolist(),
+#             "scale": grouped["scale"].tolist(),
+#             "performance_count": grouped["performance_count"].tolist(),
+#             "total_ticket_sales": grouped["total_ticket_sales"].tolist()
+#         }
+#     }
+
+
 # -----------------------------
 # 임시 더미 데이터를 반환하는 집계 시각화 함수들
 # -----------------------------
 
 def get_genre_stats() -> dict:
-    """
-    임시 더미 데이터를 반환하여 장르별 집계 시각화에 필요한 JSON 데이터를 생성합니다.
-    원시 데이터 명세 (전처리 전): CSV 파일 '장르별 통계_20230101~20241231.csv'
-      - 9개 장르 (예: "뮤지컬", "연극", "콘서트", "무용", "오페라", "발레", "재즈", "클래식", "다문화")
-      - 각 장르별 총 공연작수, 누적 관객수, 티켓 매출액, 티켓 판매수 산출
-    """
-    result = {
+    return {
         "genre_stats": {
             "genre": ["뮤지컬", "연극", "콘서트", "무용", "오페라", "발레", "재즈", "클래식", "다문화"],
             "performance_count": [120, 95, 80, 70, 65, 60, 55, 50, 45],
             "audience": [30000, 25000, 22000, 20000, 19000, 18000, 17000, 16000, 15000],
-            "ticket_revenue": [50000000, 40000000, 35000000, 33000000, 32000000, 31000000, 30000000, 29000000, 28000000],
-            "ticket_sales": [28000, 24000, 21000, 20500, 20000, 19500, 19000, 18500, 18000]
+            "ticket_revenue": [50000000, 40000000, 35000000, 33000000, 32000000, 31000000, 30000000, 29000000, 28000000]
         }
     }
-    return result
 
 def get_regional_stats() -> dict:
-    """
-    임시 더미 데이터를 반환하여 지역별 집계 시각화에 필요한 JSON 데이터를 생성합니다.
-    원시 데이터 명세 (전처리 전): CSV 파일 '지역별 통계_20230101~20241231.csv'
-      - 상위 5개 지역 (예: "서울", "부산", "대구", "인천", "광주")
-      - 각 지역별 공연건수, 상연횟수, 총 티켓판매수, 총 티켓매출액
-    """
-    result = {
+    return {
         "regional_stats": {
             "region": ["서울", "부산", "대구", "인천", "광주"],
             "performance_count": [300, 150, 120, 100, 80],
@@ -337,31 +404,20 @@ def get_regional_stats() -> dict:
             "total_ticket_revenue": [75000000, 35000000, 33000000, 28000000, 25000000]
         }
     }
-    return result
 
 def get_venue_scale_stats() -> dict:
-    """
-    임시 더미 데이터를 반환하여 공연장 규모별 집계 시각화에 필요한 JSON 데이터를 생성합니다.
-    원시 데이터 명세 (전처리 전): CSV 파일 '공연시설연도규모_분류.csv'
-      - 연도와 규모 컬럼을 추가. 
-      - 2023년 및 2024년 데이터 각각, 공연장 규모는 7개 범주:
-            "좌석 미상", "1~300석 미만", "300~500석 미만", "500~1,000석 미만",
-            "1,000~5,000석 미만", "5,000~10,000석 미만", "10,000석 이상"
-      - 각 범주별 공연건수, 총 티켓판매수 산출
-    """
-    # 2023년 7개 범주 dummy 데이터
+    # 2023년 및 2024년 각각 7개 범주 dummy 데이터 (총 14개 항목)
     year_2023 = [2023] * 7
-    scales = ["좌석 미상", "1~300석 미만", "300~500석 미만", "500~1,000석 미만", "1,000~5,000석 미만", "5,000~10,000석 미만", "10,000석 이상"]
-    perf_count_2023 = [100, 150, 120, 80, 60, 40, 20]         # 예시 값
+    scales = ["좌석 미상", "1~300석 미만", "300~500석 미만", "500~1,000석 미만",
+              "1,000~5,000석 미만", "5,000~10,000석 미만", "10,000석 이상"]
+    perf_count_2023 = [100, 150, 120, 80, 60, 40, 20]
     ticket_sales_2023 = [50000, 80000, 60000, 40000, 30000, 20000, 10000]
     
-    # 2024년 7개 범주 dummy 데이터
     year_2024 = [2024] * 7
-    perf_count_2024 = [110, 160, 130, 90, 70, 50, 30]            # 예시 값
+    perf_count_2024 = [110, 160, 130, 90, 70, 50, 30]
     ticket_sales_2024 = [55000, 85000, 65000, 45000, 35000, 25000, 15000]
     
-    # 합치기 (총 14개 항목)
-    result = {
+    return {
         "venue_scale_stats": {
             "year": year_2023 + year_2024,
             "scale": scales + scales,
@@ -369,4 +425,3 @@ def get_venue_scale_stats() -> dict:
             "total_ticket_sales": ticket_sales_2023 + ticket_sales_2024
         }
     }
-    return result
