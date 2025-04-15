@@ -1,4 +1,4 @@
-## 채팅 API와 연결
+## components/AIBot.js에서 채팅 API와 연결
 
 ![image](https://github.com/user-attachments/assets/e39aeef2-f780-405f-bb75-95ca15bce878)
 
