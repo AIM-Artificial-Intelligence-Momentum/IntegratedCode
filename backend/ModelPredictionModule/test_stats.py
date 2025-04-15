@@ -6,7 +6,7 @@ import pprint
 # 프로젝트 루트(IntegratedCode)를 sys.path에 추가 (필요 시)
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..")))
 
-from backend.ModelPredictionModule.analysis_module import (
+from ModelPredictionModule.analysis_module import (
     get_genre_stats,
     get_regional_stats,
     get_venue_scale_stats

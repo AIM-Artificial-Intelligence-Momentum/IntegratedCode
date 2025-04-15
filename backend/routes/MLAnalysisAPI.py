@@ -4,7 +4,7 @@ from typing import List
 import numpy as np
 
 # 아래 import 시 경로에 주의 (폴더 구조에 맞게 조정)
-from backend.ModelPredictionModule.analysis_module import (
+from ModelPredictionModule.analysis_module import (
     predict_acc_sales_planning,
     predict_acc_sales_selling,
     predict_roi_bep_planning,

@@ -5,7 +5,7 @@ import jsPDF from 'jspdf';
 import html2canvas from 'html2canvas';
 import AIBot from './AIBot';
 
-export default function Sidebar({ planningSummary, setPlannningSummary }) {
+export default function Sidebar({ planningSummary, setPlannningSummary, setChartData}) {
     const exportPDF = async () => {
         const input = document.getElementById('dashboard');
         if (!input) return;
@@ -42,7 +42,7 @@ export default function Sidebar({ planningSummary, setPlannningSummary }) {
                 </button>
             </div>
             <div className='mt-4'>
-                <AIBot setPlannningSummary={setPlannningSummary} />
+                <AIBot setPlanningSummary={setPlannningSummary} setChartData={setChartData}/>
             </div>
         </div>
         

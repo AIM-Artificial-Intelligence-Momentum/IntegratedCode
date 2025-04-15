@@ -1,7 +1,7 @@
 # 챗봇 라우터, 챗봇 서비스(ChatbotService.py)를 사용 
 from fastapi import APIRouter, Request
 from fastapi.responses import JSONResponse
-from ..AzureServiceModule.ChatbotService import ChatbotService 
+from AzureServiceModule.ChatbotService import ChatbotService 
 import os 
 from dotenv import load_dotenv
 load_dotenv()

@@ -1,8 +1,8 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
-from backend.routes import MLAnalysisAPI
-from backend.routes import ChatbotAPI 
+from routes import MLAnalysisAPI
+from routes import ChatbotAPI 
 
 app = FastAPI(docs_url="/api/docs")
 
@@ -19,4 +19,4 @@ app.include_router(MLAnalysisAPI.router, prefix="/api/ml")
 app.include_router(ChatbotAPI.router, prefix="/api/chatbot")
 
 # 정적 파일 (D3.js 포함 프론트엔드)
-app.mount("/", StaticFiles(directory="frontend", html=True), name="frontend")
+# app.mount("/", StaticFiles(directory="frontend", html=True), name="frontend")

@@ -1,5 +1,4 @@
 # AzureServiceModule/AzureOpenAIClient.py
-
 from openai import AzureOpenAI
 
 # Azure OpenAI 클라이언트를 생성하여 반환합니다.

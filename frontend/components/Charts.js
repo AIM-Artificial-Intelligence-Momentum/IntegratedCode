@@ -4,8 +4,11 @@
 import ChartLine from './ChartLine';
 import ChartPie from './ChartPie';
 import ChartBar from './ChartBar';
+import ChartVisualizer from './ChartVisualizer';
 
-export default function Charts({ planningSummary }) {
+export default function Charts({ planningSummary, chartData }) {
+
+
   return (
     <div className="flex-1 p-4 overflow-auto">
       <div className="mb-8">
@@ -30,6 +33,16 @@ export default function Charts({ planningSummary }) {
           <ChartBar data={planningSummary.marketingBreakdown} />
         </div>
       </div>
+
+      {chartData && (
+        <div className="mt-10">
+          <h3 className="text-lg font-semibold mb-4">AI 분석 기반 차트</h3>
+          <div className="bg-white p-4 rounded border border-gray-200">
+            <ChartVisualizer data={chartData} />
+          </div>
+        </div>
+      )}
+
     </div>
   );
 }

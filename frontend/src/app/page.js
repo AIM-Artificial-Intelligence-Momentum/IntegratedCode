@@ -21,15 +21,16 @@ export default function Home() {
       { category: '기타 마케팅', value: 10 },
     ],
   });
+  const [chartData, setChartData] = useState(null);
 
   return (
     <div id="dashboard" className="flex flex-col md:flex-row h-screen">
       {/* 작은 화면: 세로 배치, md 이상: 좌측 1/3, 우측 2/3 */}
       <div className="md:w-1/3">
-        <Sidebar planningSummary={planningSummary} setPlanningSummary={setPlanningSummary} />
+        <Sidebar planningSummary={planningSummary} setPlanningSummary={setPlanningSummary} setChartData={setChartData}/>
       </div>
       <div className="md:w-2/3">
-        <Charts planningSummary={planningSummary} />
+        <Charts planningSummary={planningSummary} chartData={chartData} />
       </div>
     </div>
   );

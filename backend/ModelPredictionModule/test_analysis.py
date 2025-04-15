@@ -1,5 +1,4 @@
 # test_analysis.py
-
 import pprint
 from .analysis_module import (
     predict_acc_sales_planning,
