@@ -10,14 +10,14 @@ class AISearchService:
 
     def query(self, user_input: str) -> str:
         messages = [
-            {"role": "system", "content": "Azure AI Search를 활용해 사용자의 질문에 적합한 공연 기획 문서를 요약해 주세요."},
+            {"role": "system", "content": "너는 문화예술행사 전문 에이전트야. 한국어로 대답하고, 프롬프트를 잘 해석해서 대답해줘. 문서 참조도 충실하게 해줘."},
             {"role": "user", "content": user_input}
         ]
 
         response = self.client.chat.completions.create(
             model=self.deployment,
             messages=messages,
-            temperature=0.2,
+            temperature=0.7,
             max_tokens=800,
             extra_body={
                 "data_sources": [
@@ -26,7 +26,7 @@ class AISearchService:
                         "parameters": {
                             "endpoint": self.search_endpoint,
                             "index_name": self.search_index,
-                            "semantic_configuration": "stage4-index-semantic-configuration",
+                            "semantic_configuration": "stage3-index-semantic-configuration",
                             "query_type": "semantic",
                             "in_scope": True,
                             "filter": None,
