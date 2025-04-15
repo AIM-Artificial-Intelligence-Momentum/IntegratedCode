@@ -85,6 +85,21 @@ class ChatbotService:
     # 필요한 분석 유형 결정 함수
     def _determine_analysis_type(self, user_input, stage):
         """사용자 입력과 단계를 기반으로 필요한 분석 유형 결정"""
+        # 통계 분석 우선 검출 (단계 구분 없음)
+        if re.search(r"(장르별|장르.{0,5}통계|장르.{0,5}분석|장르.{0,5}결산|장르.{0,5}추이)", user_input, re.IGNORECASE):
+            return ["genre_stats"]
+            
+        if re.search(r"(지역별|지역.{0,5}통계|지역.{0,5}분석|지역.{0,5}결산|지역.{0,5}추이)", user_input, re.IGNORECASE):
+            return ["regional_stats"]
+        
+        if re.search(r"(공연장.{0,5}규모|규모별|좌석.{0,5}규모|규모.{0,5}분석)", user_input, re.IGNORECASE):
+            return ["venue_scale_stats"]
+        
+        # 티켓 위험도 분석은 단계에 관계없이 요청 가능하도록 설정
+        if re.search(r"(티켓.{0,5}위험|위험.{0,5}분석|티켓.{0,5}리스크|위험도)", user_input, re.IGNORECASE):
+            return ["ticket_risk_selling"]
+        
+        # 기존 분석 유형 (단계 구분 적용)
         # 기본 분석 유형
         if stage == "기획":
             analysis_types = ["accumulated_sales_planning", "roi_bep_planning"]
@@ -211,7 +226,7 @@ class ChatbotService:
         """ML API 내부 직접 호출"""
         try:
             # ML 모듈에서 함수 직접 임포트
-            from ModelPredictionModule.analysis_module import (
+            from backend.ModelPredictionModule.analysis_module import (
                 predict_acc_sales_planning,
                 predict_acc_sales_selling,
                 predict_roi_bep_planning,
