@@ -29,3 +29,5 @@ Thumbs.db
 # Python virtual environments
 venv/
 venv*/   
+# Next.js build
+frontend/.next/
