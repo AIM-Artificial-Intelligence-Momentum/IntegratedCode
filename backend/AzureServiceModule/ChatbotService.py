@@ -54,41 +54,6 @@ class ChatbotService:
         except:
             return 1.0  # 변환 실패 시 기본값
 
-    def _detect_analysis_request(self, user_input):
-        """사용자 입력에서 분석 요청을 감지"""
-        # 단순 키워드 확인 (한국어 환경)
-        simple_keywords = [
-            "분석", "예측", "계산", "ROI", "BEP", 
-            "통계", "현황", "추이", "총결산", "비교",
-            "장르별", "지역별", "규모별"
-        ]
-        for keyword in simple_keywords:
-            if keyword in user_input:
-                logger.debug(f"키워드 '{keyword}'로 분석 요청 감지됨")
-                return True
-        
-        # 정규표현식 패턴 확인
-        analysis_patterns = [
-            r"분석.*(해줘|해 ?주세요|부탁|부탁해|부탁드려|알려줘)",
-            r"예측.*(해줘|해 ?주세요|부탁|부탁해|부탁드려|알려줘)",
-            r"(관객|티켓|매출|수익|손익).*(얼마나|어떻게|예상|예측|분석)",
-            r"위험.*(분석|평가|예측)",
-            r"(ROI|BEP).*(알려|계산|예측)",
-            r"분석.*(결과|해보|시작)",
-            r"(장르별|지역별|공연장|규모별).*(통계|분석|현황|추이|데이터)",
-            r"(장르|지역|공연장).*(비교|순위|추이|성과)",
-            r"(몇 개|얼마나|어떤).*(장르|지역|공연장)",
-            r"(총결산|통계|보고서|결과).*(보여줘|알려줘|확인)"
-        ]
-        
-        for pattern in analysis_patterns:
-            if re.search(pattern, user_input, re.IGNORECASE):
-                logger.debug(f"패턴 '{pattern}'으로 분석 요청 감지됨")
-                return True
-        
-        logger.debug("분석 요청 감지되지 않음")
-        return False
-    
     # 필요한 분석 유형 결정 함수
     def _determine_analysis_type(self, user_input, stage):
         """사용자 입력과 단계를 기반으로 필요한 분석 유형 결정"""
@@ -102,8 +67,8 @@ class ChatbotService:
         if re.search(r"(공연장.{0,5}규모|규모별|좌석.{0,5}규모|규모.{0,5}분석)", user_input, re.IGNORECASE):
             return ["venue_scale_stats"]
         
-        # 티켓 위험도 분석은 단계에 관계없이 요청 가능하도록 설정
-        if re.search(r"(티켓.{0,5}위험|위험.{0,5}분석|티켓.{0,5}리스크|위험도)", user_input, re.IGNORECASE):
+        # 티켓 위험도 분석은 단계와 관계없이 요청 가능하도록 설정
+        if re.search(r"(티켓.{0,5}위험|위험.{0,5}분석|티켓.{0,5}리스크|위험도|위험|리스크|가능성|실패)", user_input, re.IGNORECASE):
             return ["ticket_risk_selling"]
         
         # 기존 분석 유형 (단계 구분 적용)
@@ -126,9 +91,6 @@ class ChatbotService:
             else:
                 return ["roi_bep_selling"]
                 
-        elif re.search(r"(위험|리스크|가능성|실패)", user_input, re.IGNORECASE) and stage == "판매":
-            return ["ticket_risk_selling"]
-            
         # 명확한 패턴이 없으면 단계별 기본 분석 실행
         return analysis_types
     
@@ -227,6 +189,51 @@ class ChatbotService:
         
         return formatted_vars
         
+    # API 호출 실패 시 가상 응답 제공 함수
+    def _get_fallback_response(self, analysis_type):
+        """API 호출 실패 시 가상 응답 생성"""
+        logger.info(f"{analysis_type}에 대한 가상 응답 생성")
+        
+        if analysis_type == "accumulated_sales_planning":
+            return {"predictions": [15000]}
+        elif analysis_type == "roi_bep_planning":
+            return {"predictions": [15.5, 8000]}
+        elif analysis_type == "accumulated_sales_selling":
+            return {"predictions": [20000]}
+        elif analysis_type == "roi_bep_selling":
+            return {"predictions": [18.5, 9500]}
+        elif analysis_type == "ticket_risk_selling":
+            return {"risk_labels": [0]}
+        elif analysis_type == "genre_stats":
+            return {
+                "genre_stats": {
+                    "genre": ["뮤지컬", "연극", "콘서트", "무용", "오페라"],
+                    "performance_count": [120, 95, 80, 70, 65],
+                    "audience": [30000, 25000, 22000, 20000, 19000],
+                    "ticket_revenue": [50000000, 40000000, 35000000, 33000000, 32000000]
+                }
+            }
+        elif analysis_type == "regional_stats":
+            return {
+                "regional_stats": {
+                    "region": ["서울", "부산", "대구", "인천", "광주"],
+                    "performance_count": [300, 150, 120, 100, 80],
+                    "show_count": [1000, 600, 500, 450, 300],
+                    "total_ticket_sales": [250000, 120000, 110000, 90000, 80000],
+                    "total_ticket_revenue": [75000000, 35000000, 33000000, 28000000, 25000000]
+                }
+            }
+        elif analysis_type == "venue_scale_stats":
+            return {
+                "venue_scale_stats": {
+                    "year": [2024, 2024, 2024],
+                    "scale": ["300석 미만", "300~1,000석", "1,000석 이상"],
+                    "performance_count": [160, 130, 70],
+                    "total_ticket_sales": [85000, 65000, 45000]
+                }
+            }
+        
+        return {"error": "알 수 없는 분석 유형"}
     
     # ML API 호출 함수
     async def _call_ml_api(self, analysis_type, formatted_vars):
@@ -238,9 +245,26 @@ class ChatbotService:
                 predict_acc_sales_selling,
                 predict_roi_bep_planning,
                 predict_roi_bep_selling,
-                predict_ticket_risk
+                predict_ticket_risk,
+                get_genre_stats,
+                get_regional_stats,
+                get_venue_scale_stats
             )
             
+            # 통계 분석 (입력 데이터 없이 호출)
+            if analysis_type == "genre_stats":
+                stats = get_genre_stats()
+                return stats
+            
+            elif analysis_type == "regional_stats":
+                stats = get_regional_stats()
+                return stats
+                
+            elif analysis_type == "venue_scale_stats":
+                stats = get_venue_scale_stats()
+                return stats
+            
+            # 기존 예측 분석 (입력 데이터 필요)
             # 단일 객체를 리스트로 포장
             input_data = [formatted_vars]
             
@@ -273,6 +297,105 @@ class ChatbotService:
             if "error" in results:
                 return f"분석 중 오류가 발생했습니다: {results['error']}"
             
+            # 통계 분석 결과 해석
+            if analysis_type == "genre_stats":
+                if "genre_stats" in results:
+                    stats = results["genre_stats"]
+                    genres = stats.get("genre", [])
+                    counts = stats.get("performance_count", [])
+                    audiences = stats.get("audience", [])
+                    revenues = stats.get("ticket_revenue", [])
+                    
+                    # 상위 3개 장르 추출
+                    if len(genres) > 0:
+                        # 공연 작수 기준 상위 3개
+                        top_genres_idx = sorted(range(len(counts)), key=lambda i: counts[i], reverse=True)[:3]
+                        top_genres = [genres[i] for i in top_genres_idx]
+                        top_counts = [counts[i] for i in top_genres_idx]
+                        
+                        response = f"🎭 장르별 통계 분석 결과:\n\n"
+                        response += f"공연 작품 수가 가장 많은 장르는 '{top_genres[0]}'로 {top_counts[0]}개 작품이 공연되었습니다.\n"
+                        response += f"그 다음으로 '{top_genres[1]}'({top_counts[1]}개), '{top_genres[2]}'({top_counts[2]}개) 순입니다.\n\n"
+                        
+                        # 총 공연 작품 수와 관객 수
+                        total_performances = sum(counts)
+                        total_audience = sum(audiences)
+                        total_revenue = sum(revenues)
+                        
+                        response += f"전체 {len(genres)}개 장르에서 총 {total_performances}개 작품이 공연되었으며, "
+                        response += f"총 관객 수는 {total_audience:,}명, 티켓 매출액은 {total_revenue:,}원입니다.\n"
+                        
+                        return response
+                        
+                return "장르별 통계 데이터가 준비되었습니다."
+                
+            elif analysis_type == "regional_stats":
+                if "regional_stats" in results:
+                    stats = results["regional_stats"]
+                    regions = stats.get("region", [])
+                    counts = stats.get("performance_count", [])
+                    shows = stats.get("show_count", [])
+                    sales = stats.get("total_ticket_sales", [])
+                    
+                    if len(regions) > 0:
+                        response = f"📍 지역별 통계 분석 결과:\n\n"
+                        response += f"공연이 가장 많이 열린 지역은 '{regions[0]}'로 {counts[0]}개 공연, {shows[0]}회 상연이 진행되었습니다.\n"
+                        
+                        # 상위 3개 지역 비교
+                        if len(regions) >= 3:
+                            response += f"그 다음으로 '{regions[1]}'({counts[1]}개), '{regions[2]}'({counts[2]}개) 순입니다.\n\n"
+                        
+                        # 티켓 판매 비교
+                        if len(sales) > 0:
+                            top_sales_idx = sorted(range(len(sales)), key=lambda i: sales[i], reverse=True)[0]
+                            response += f"티켓 판매가 가장 많은 지역은 '{regions[top_sales_idx]}'로 총 {sales[top_sales_idx]:,}장이 판매되었습니다.\n"
+                        
+                        return response
+                        
+                return "지역별 통계 데이터가 준비되었습니다."
+                
+            elif analysis_type == "venue_scale_stats":
+                if "venue_scale_stats" in results:
+                    stats = results["venue_scale_stats"]
+                    years = stats.get("year", [])
+                    scales = stats.get("scale", [])
+                    counts = stats.get("performance_count", [])
+                    sales = stats.get("total_ticket_sales", [])
+                    
+                    if len(years) > 0 and len(scales) > 0:
+                        # 최신 연도 데이터 추출
+                        latest_year = max(years) if years else 0
+                        latest_year_indices = [i for i, y in enumerate(years) if y == latest_year]
+                        
+                        latest_scales = [scales[i] for i in latest_year_indices]
+                        latest_counts = [counts[i] for i in latest_year_indices]
+                        
+                        # 가장 많은 공연이 열린
+                        if latest_counts:
+                            max_idx = latest_counts.index(max(latest_counts))
+                            response = f"🏛️ 공연장 규모별 통계 분석 결과 ({latest_year}년):\n\n"
+                            response += f"가장 많은 공연이 열린 공연장 규모는 '{latest_scales[max_idx]}'로 {latest_counts[max_idx]}개 공연이 진행되었습니다.\n"
+                            
+                            # 작년과 비교
+                            prev_year = latest_year - 1
+                            prev_year_indices = [i for i, y in enumerate(years) if y == prev_year]
+                            
+                            if prev_year_indices:
+                                prev_scales = [scales[i] for i in prev_year_indices]
+                                prev_counts = [counts[i] for i in prev_year_indices]
+                                
+                                # 같은 규모 찾기
+                                if latest_scales[max_idx] in prev_scales:
+                                    prev_idx = prev_scales.index(latest_scales[max_idx])
+                                    change = latest_counts[max_idx] - prev_counts[prev_idx]
+                                    change_text = f"증가했습니다" if change > 0 else f"감소했습니다" if change < 0 else "동일합니다"
+                                    response += f"이는 {prev_year}년({prev_counts[prev_idx]}개)에 비해 {abs(change)}개 {change_text}.\n"
+                            
+                            return response
+                        
+                return "공연장 규모별 통계 데이터가 준비되었습니다."
+            
+            # 기존 예측 분석 결과 해석 (이전 코드 유지)
             # 중첩된 predictions 구조 처리
             if "predictions" in results and isinstance(results["predictions"], dict):
                 nested_results = results["predictions"]
@@ -331,13 +454,17 @@ class ChatbotService:
         except Exception as e:
             logger.error(f"결과 해석 오류: {str(e)}", exc_info=True)
             return f"결과 해석 중 오류 발생: {str(e)}"
+            
+        except Exception as e:
+            logger.error(f"결과 해석 오류: {str(e)}", exc_info=True)
+            return f"결과 해석 중 오류 발생: {str(e)}"
     
     # 기존 handle_user_input 함수 확장
     async def handle_user_input(self, user_input, history):
         if not isinstance(history, list):
             history = []
 
-        # 1. 사용자 의도 분류: 수집 / 검색 / 혼합
+        # 1. 사용자 의도 분류: 수집 / 검색 / 분석 / 혼합
         intent = self.classifier.classify_intent(user_input)
         stage = self.detector.detect_stage(user_input)
         
@@ -357,11 +484,8 @@ class ChatbotService:
                 if val is not None:
                     self.collected_vars[key] = val
 
-        # 2-2. 분석 요청 감지 및 처리
-        is_analysis_request = self._detect_analysis_request(user_input)
-        logger.debug(f"분석 요청 감지: {is_analysis_request}")
-        
-        if is_analysis_request:
+        # 2-2. 분석 요청 처리 - 의도가 "분석" 또는 "혼합"일 때만 수행
+        if intent in ["분석", "혼합"]:
             analysis_types = self._determine_analysis_type(user_input, stage)
             logger.debug(f"결정된 분석 유형: {analysis_types}")
             
