@@ -54,11 +54,14 @@ class ChatbotService:
         except:
             return 1.0  # 변환 실패 시 기본값
 
-    # 분석 요청 감지 함수
     def _detect_analysis_request(self, user_input):
         """사용자 입력에서 분석 요청을 감지"""
         # 단순 키워드 확인 (한국어 환경)
-        simple_keywords = ["분석", "예측", "계산", "ROI", "BEP"]
+        simple_keywords = [
+            "분석", "예측", "계산", "ROI", "BEP", 
+            "통계", "현황", "추이", "총결산", "비교",
+            "장르별", "지역별", "규모별"
+        ]
         for keyword in simple_keywords:
             if keyword in user_input:
                 logger.debug(f"키워드 '{keyword}'로 분석 요청 감지됨")
@@ -71,7 +74,11 @@ class ChatbotService:
             r"(관객|티켓|매출|수익|손익).*(얼마나|어떻게|예상|예측|분석)",
             r"위험.*(분석|평가|예측)",
             r"(ROI|BEP).*(알려|계산|예측)",
-            r"분석.*(결과|해보|시작)"
+            r"분석.*(결과|해보|시작)",
+            r"(장르별|지역별|공연장|규모별).*(통계|분석|현황|추이|데이터)",
+            r"(장르|지역|공연장).*(비교|순위|추이|성과)",
+            r"(몇 개|얼마나|어떤).*(장르|지역|공연장)",
+            r"(총결산|통계|보고서|결과).*(보여줘|알려줘|확인)"
         ]
         
         for pattern in analysis_patterns:
