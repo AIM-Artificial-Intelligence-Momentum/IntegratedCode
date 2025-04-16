@@ -294,6 +294,9 @@ class ChatbotService:
     def _interpret_analysis_results(self, analysis_type, results):
         """분석 결과를 사용자 친화적인 텍스트로 변환"""
         try:
+            logger.debug(f"분석 유형: {analysis_type}, 결과 구조: {type(results)}")
+            logger.debug(f"결과 내용: {results}")
+            
             if "error" in results:
                 return f"분석 중 오류가 발생했습니다: {results['error']}"
             
@@ -395,6 +398,24 @@ class ChatbotService:
                         
                 return "공연장 규모별 통계 데이터가 준비되었습니다."
             
+            # 티켓 리스크 분석 로직 세부 확인
+            if analysis_type == "ticket_risk_selling":
+                logger.debug(f"티켓 리스크 분석 세부 결과: {results}")
+                if "risk_labels" in results:
+                    risk_labels = results.get("risk_labels", [0])
+                    logger.debug(f"리스크 레이블: {risk_labels}, 타입: {type(risk_labels)}")
+                    risk_label = risk_labels[0] if len(risk_labels) > 0 else 0
+                    logger.debug(f"첫 번째 리스크 레이블: {risk_label}")
+                    risk_level = "낮음" if risk_label == 0 else "높음"
+                    risk_text = f"⚠️ 티켓 판매 위험도: {risk_level}\n"
+                    
+                    if risk_label == 1:
+                        advice = "추가 마케팅 활동이나 프로모션을 고려해보세요."
+                    else:
+                        advice = "현재 판매 추세가 양호합니다."
+                        
+                    return risk_text + advice
+            
             # 기존 예측 분석 결과 해석 (이전 코드 유지)
             # 중첩된 predictions 구조 처리
             if "predictions" in results and isinstance(results["predictions"], dict):
@@ -455,9 +476,6 @@ class ChatbotService:
             logger.error(f"결과 해석 오류: {str(e)}", exc_info=True)
             return f"결과 해석 중 오류 발생: {str(e)}"
             
-        except Exception as e:
-            logger.error(f"결과 해석 오류: {str(e)}", exc_info=True)
-            return f"결과 해석 중 오류 발생: {str(e)}"
     
     # 기존 handle_user_input 함수 확장
     async def handle_user_input(self, user_input, history):
