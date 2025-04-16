@@ -22,7 +22,7 @@ export function renderCharts(chartDataArray) {
   return chartDataArray.map((chart, idx) => {
     const {
       chartType, title, xField, yField, yFields, band, data,
-      categoryField, columns, pieFields
+      categoryField, columns, pieFields, stats
     } = chart;
 
     return (
@@ -33,7 +33,7 @@ export function renderCharts(chartDataArray) {
         <ResponsiveContainer width="100%" height={300}>
           {getChartComponent(
             chartType, data, xField, yField, yFields,
-            band, categoryField, columns, pieFields
+            band, categoryField, columns, pieFields, stats
           )}
         </ResponsiveContainer>
       </Box>
@@ -43,7 +43,7 @@ export function renderCharts(chartDataArray) {
 
 function getChartComponent(
   type, data, xField, yField, yFields,
-  band, categoryField, columns, pieFields
+  band, categoryField, columns, pieFields, stats
 ) {
   switch (type) {
     case 'bar':
@@ -195,6 +195,34 @@ function getChartComponent(
             );
           })}
         </Box>
+      );
+
+    case 'histogram':
+      return (
+        <BarChart data={data}>
+          <CartesianGrid strokeDasharray="3 3" />
+          <XAxis dataKey={xField} />
+          <YAxis />
+          <Tooltip />
+          <Legend />
+          <Bar dataKey={yField} fill={COLORS[0]} name="빈도수" />
+        </BarChart>
+      );
+
+    case 'boxplot':
+      if (!stats || !stats.min || !stats.max || !stats.q1 || !stats.q3 || !stats.median) return null;
+
+      const boxData = [{ name: "BEP", ...stats }];
+      return (
+        <ResponsiveContainer width="100%" height={200}>
+          <BarChart layout="vertical" data={boxData}>
+            <CartesianGrid strokeDasharray="3 3" />
+            <XAxis type="number" domain={[stats.min * 0.95, stats.max * 1.05]} />
+            <YAxis type="category" dataKey="name" />
+            <Tooltip />
+            <Bar dataKey="median" fill={COLORS[2]} name="중앙값" />
+          </BarChart>
+        </ResponsiveContainer>
       );
 
     default:

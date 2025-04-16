@@ -1,3 +1,4 @@
+// scenes/dashboard/components/hooks/useCsvData.js
 import { useEffect, useState } from "react";
 
 export default function useCsvData() {
@@ -19,6 +20,8 @@ export default function useCsvData() {
           salesScatter: "/판매_좌석수vs누적판매량.json",
           salesCompare: "/판매_실측vs예측비교.json",
           roiBep: "/roi_bep_data.json",
+          roiHistogram: "/roi_histogram.json",
+          bepBoxplot: "/bep_boxplot.json",
           predictedAudienceLine: "/예측_관객_추이_그래프.json",
           scatterPredicted: "/좌석수_vs_관객수_산점도.json",
           ticketWarningLine: "/예매_추이_비교_그래프.json",
@@ -42,6 +45,8 @@ export default function useCsvData() {
           salesScatter,
           salesCompare,
           roiBep,
+          roiHistogram,
+          bepBoxplot,
           predictedAudienceLine,
           scatterPredicted,
           ticketWarningLine,
@@ -117,7 +122,7 @@ export default function useCsvData() {
               data: salesLine,
               options: {
                 genreField: "genre",
-                showMarketingEvents: true, // 마케팅 이벤트 표시 가능 여부 (옵션)
+                showMarketingEvents: true,
               }
             },
             {
@@ -150,6 +155,18 @@ export default function useCsvData() {
               xField: "performance_name",
               yFields: ["bep"],
               data: roiBep,
+            },
+            {
+              chartType: "histogram",
+              title: "ROI 분포 (히스토그램)",
+              xField: "range",
+              yField: "count",
+              data: roiHistogram,
+            },
+            {
+              chartType: "boxplot",
+              title: "BEP 분포 (박스플롯)",
+              stats: bepBoxplot,
             }
           ],
           "손익 예측 – 판매 단계": [
@@ -188,7 +205,7 @@ export default function useCsvData() {
               chartType: "table",
               title: "과거 공연 리스트 테이블",
               columns: ["performance_name", "booking_rate", "risk_level"],
-              data: audience, // 추후 risk_level 포함된 전처리 데이터로 교체 가능
+              data: audience,
             },
             {
               chartType: "roc-curve",
@@ -205,7 +222,6 @@ export default function useCsvData() {
               data: ticketWarningLine,
             }
           ]
-          
         });
       } catch (err) {
         console.error("JSON 로딩 중 오류 발생:", err);

@@ -1,8 +1,6 @@
 // scenes/dashboard/components/charts/TableChart.jsx
 'use client';
 
-'use client';
-
 import {
   Table, TableBody, TableCell, TableContainer,
   TableHead, TableRow, Paper

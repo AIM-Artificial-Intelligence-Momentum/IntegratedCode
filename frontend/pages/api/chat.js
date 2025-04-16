@@ -1,4 +1,4 @@
-// ✅ Chat.js
+// pages/api/chat.js
 'use client';
 import { useRef, useState } from 'react';
 
