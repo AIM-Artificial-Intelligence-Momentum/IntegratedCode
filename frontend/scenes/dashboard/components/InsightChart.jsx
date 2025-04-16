@@ -1,7 +1,7 @@
 /// scenes/dashboard/components/InsightCharts.jsx
 'use client';
 
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import {
   Box,
   Typography,
@@ -13,11 +13,18 @@ import { renderCharts } from "./chartHelpers";
 import useCsvData from "./hooks/useCsvData";
 import useCsvObserver from "./utils/useCsvObserver";
 
-export default function InsightChart({ onTabChange }) {
-  const dataBySection = useCsvData(); // 시나리오별 데이터
-  const scenarioTitles = Object.keys(dataBySection); // 동적 탭 생성
+export default function InsightChart({ onTabChange, externalData }) {
+  const dataBySection = useCsvData();
+  const scenarioTitles = Object.keys(dataBySection);
   const [activeTab, setActiveTab] = useState(0);
   const sectionRefs = useRef([]);
+  const [activeChartData, setActiveChartData] = useState([]);
+
+  useEffect(() => {
+    if (externalData && externalData.length > 0) {
+      setActiveChartData(externalData);
+    }
+  }, [externalData]);
 
   const handleTabClick = (index) => {
     const targetRef = sectionRefs.current[index];
@@ -26,7 +33,6 @@ export default function InsightChart({ onTabChange }) {
     }
   };
 
-  // 스크롤 감지 → activeTab 업데이트
   useCsvObserver(sectionRefs, dataBySection, setActiveTab, onTabChange);
 
   return (
@@ -57,6 +63,15 @@ export default function InsightChart({ onTabChange }) {
           <Divider sx={{ my: 4 }} />
         </Box>
       ))}
+
+      {activeChartData && activeChartData.length > 0 && (
+        <Box mt={6}>
+          <Typography variant="h6" fontWeight="bold" mb={2}>
+            🧠 ChatGPT Generated Insights
+          </Typography>
+          {renderCharts(activeChartData)}
+        </Box>
+      )}
     </Box>
   );
 }

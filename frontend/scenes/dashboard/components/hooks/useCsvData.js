@@ -25,7 +25,8 @@ export default function useCsvData() {
           predictedAudienceLine: "/예측_관객_추이_그래프.json",
           scatterPredicted: "/좌석수_vs_관객수_산점도.json",
           ticketWarningLine: "/예매_추이_비교_그래프.json",
-          rocCurve: "/roc_curve_data.json"
+          rocCurve: "/roc_curve_data.json",
+          forecastAudience: "/forecast_audience_time_series.json"
         };
 
         const results = await Promise.all(
@@ -50,8 +51,16 @@ export default function useCsvData() {
           predictedAudienceLine,
           scatterPredicted,
           ticketWarningLine,
-          rocCurve
+          rocCurve,
+          forecastAudience
         ] = results;
+
+        const forecastAudienceProcessed = forecastAudience.dates.map((date, idx) => ({
+          date,
+          predicted: forecastAudience.predicted_cumulative[idx],
+          lower: forecastAudience.confidence_interval.lower[idx],
+          upper: forecastAudience.confidence_interval.upper[idx]
+        }));
 
         setScenarioData({
           "집계 시각화": [
@@ -111,6 +120,14 @@ export default function useCsvData() {
               categoryField: "genre",
               data: perfScatter,
             },
+            {
+              chartType: "line-band",
+              title: "날짜별 예측 관객 곡선 (유사 공연)",
+              xField: "date",
+              yField: "predicted",
+              band: { lower: "lower", upper: "upper" },
+              data: forecastAudienceProcessed
+            }
           ],
           "관객 수 예측 – 판매 단계": [
             {

@@ -14,12 +14,11 @@ import SendIcon from "@mui/icons-material/Send";
 import ChatIcon from "@mui/icons-material/Chat";
 import CloseIcon from "@mui/icons-material/Close";
 
-export default function ChatPage({ setPlanningSummary, setChartData }) {
+export default function ChatPage({ onUpdateInsights, setPlanningSummary }) {
   const [chatHistory, setChatHistory] = useState([
     {
       role: "assistant",
-      content:
-        "안녕하세요!\n\n 자유롭게 말씀해주세요.",
+      content: "안녕하세요!\n\n 자유롭게 말씀해주세요.",
     },
   ]);
   const [inputText, setInputText] = useState("");
@@ -50,21 +49,21 @@ export default function ChatPage({ setPlanningSummary, setChartData }) {
 
       const data = await res.json();
 
-      // 결과 표시
+      // 응답 표시
       const botReply = data.response_text || "응답 없음";
       setChatHistory((prev) => [...prev, { role: "assistant", content: botReply }]);
 
-      // 데이터 분석 결과 전달
-      if (
-        data.analysis_results &&
-        data.analysis_results.accumulated_sales_planning &&
-        typeof setChartData === "function"
-      ) {
-        setChartData(data.analysis_results.accumulated_sales_planning.predictions);
-      }
+      // 🔥 차트 데이터 연결
+      if (data.analysis_results) {
+        const charts = data.analysis_results.accumulated_sales_planning?.predictions || [];
 
-      if (typeof setPlanningSummary === "function") {
-        setPlanningSummary(data.analysis_results || {});
+        if (typeof onUpdateInsights === "function") {
+          onUpdateInsights(charts); // 👉 InsightChart.jsx로 데이터 전달
+        }
+
+        if (typeof setPlanningSummary === "function") {
+          setPlanningSummary(data.analysis_results);
+        }
       }
     } catch (error) {
       console.error("채팅 요청 실패: ", error);

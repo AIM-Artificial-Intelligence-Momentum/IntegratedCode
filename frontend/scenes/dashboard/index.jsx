@@ -29,23 +29,61 @@ const Dashboard = () => {
     pdf.save("insight-report.pdf");
   };
 
+  const handleDummyClick = () => {
+    const dummyChartData = [
+      {
+        chartType: "bar",
+        title: "장르별 예상 관객 수 (Dummy)",
+        xField: "genre",
+        yFields: ["expected_audience"],
+        data: [
+          { genre: "뮤지컬", expected_audience: 30000 },
+          { genre: "콘서트", expected_audience: 28000 },
+          { genre: "연극", expected_audience: 15000 },
+        ],
+      },
+      {
+        chartType: "scatter",
+        title: "좌석 수 vs 예상 관객 수 (Dummy)",
+        xField: "capacity",
+        yField: "expected_audience",
+        categoryField: "genre",
+        data: [
+          { capacity: 600, expected_audience: 500, genre: "뮤지컬" },
+          { capacity: 1200, expected_audience: 1000, genre: "콘서트" },
+          { capacity: 400, expected_audience: 300, genre: "연극" },
+        ],
+      },
+    ];
+    setInsightDataFromChatGpt(dummyChartData);
+  };
+
   return (
     <Box m="10px">
       {/* ChatGPT 연결 */}
       <ChatPage onUpdateInsights={setInsightDataFromChatGpt} />
 
-      {/* PDF 다운로드 버튼 */}
-      <Box display="flex" justifyContent="flex-end" alignItems="center" my={2}>
+      {/* PDF 다운로드 + Dummy 버튼 */}
+      <Box display="flex" justifyContent="flex-end" alignItems="center" my={2} gap={2}>
+        <Button
+          onClick={handleDummyClick}
+          sx={{ fontSize: "14px", fontWeight: "bold", padding: "10px 20px" }}
+          variant="outlined"
+        >
+          🎯 Dummy Chart 테스트(AI 연동용)
+        </Button>
+
         <Button
           onClick={handleDownloadPDF}
           sx={{ fontSize: "14px", fontWeight: "bold", padding: "10px 20px" }}
+          variant="contained"
         >
           <DownloadOutlinedIcon sx={{ mr: "10px" }} />
           Download Reports
         </Button>
       </Box>
 
-      {/* 인사이트 영역 (PDF 대상) */}
+      {/* 인사이트 영역 */}
       <Paper ref={insightRef} elevation={3} sx={{ p: 3 }}>
         <Typography variant="h6" fontWeight="bold" mb={3}>
           Insight Report
