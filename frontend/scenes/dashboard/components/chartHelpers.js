@@ -1,11 +1,13 @@
 // scenes/dashboard/components/chartHelpers.js
+
 import {
   BarChart, Bar,
   LineChart, Line,
   ScatterChart, Scatter,
   AreaChart, Area,
+  PieChart, Pie, Cell,
   XAxis, YAxis, CartesianGrid, Tooltip, Legend,
-  ResponsiveContainer,
+  ResponsiveContainer
 } from 'recharts';
 
 import { Box, Typography } from '@mui/material';
@@ -18,22 +20,31 @@ export function renderCharts(chartDataArray) {
   if (!Array.isArray(chartDataArray)) return null;
 
   return chartDataArray.map((chart, idx) => {
-    const { chartType, title, xField, yField, yFields, band, data, categoryField, columns } = chart;
+    const {
+      chartType, title, xField, yField, yFields, band, data,
+      categoryField, columns, pieFields
+    } = chart;
 
     return (
-      <Box key={idx} mb={4}>
+      <Box key={idx} mb={6}>
         <Typography variant="subtitle1" fontWeight="bold" mb={1}>
           {title}
         </Typography>
         <ResponsiveContainer width="100%" height={300}>
-          {getChartComponent(chartType, data, xField, yField, yFields, band, categoryField, columns)}
+          {getChartComponent(
+            chartType, data, xField, yField, yFields,
+            band, categoryField, columns, pieFields
+          )}
         </ResponsiveContainer>
       </Box>
     );
   });
 }
 
-function getChartComponent(type, data, xField, yField, yFields, band, categoryField, columns) {
+function getChartComponent(
+  type, data, xField, yField, yFields,
+  band, categoryField, columns, pieFields
+) {
   switch (type) {
     case 'bar':
       return (
@@ -74,6 +85,28 @@ function getChartComponent(type, data, xField, yField, yFields, band, categoryFi
         </LineChart>
       );
 
+    case 'multi-line':
+    case 'line-multiple-series':
+      return (
+        <LineChart data={data}>
+          <CartesianGrid strokeDasharray="3 3" />
+          <XAxis dataKey={xField} />
+          <YAxis />
+          <Tooltip />
+          <Legend />
+          {(yFields || []).map((field, idx) => (
+            <Line
+              key={field}
+              type="monotone"
+              dataKey={field}
+              stroke={COLORS[idx % COLORS.length]}
+              strokeWidth={2}
+              dot={false}
+            />
+          ))}
+        </LineChart>
+      );
+
     case 'line-band':
       return (
         <AreaChart data={data}>
@@ -108,34 +141,8 @@ function getChartComponent(type, data, xField, yField, yFields, band, categoryFi
           <YAxis dataKey={yField} name={yField} />
           <Tooltip cursor={{ strokeDasharray: '3 3' }} />
           <Legend />
-          <Scatter
-            name={categoryField || '데이터'}
-            data={data}
-            fill="#8884d8"
-          />
+          <Scatter name={categoryField || '데이터'} data={data} fill="#8884d8" />
         </ScatterChart>
-      );
-
-    case 'multi-line':
-      return (
-        <LineChart data={data}>
-          <CartesianGrid strokeDasharray="3 3" />
-          <XAxis dataKey={xField} />
-          <YAxis />
-          <Tooltip />
-          <Legend />
-          {yFields.map((field, idx) => (
-            <Line
-              key={field}
-              type="monotone"
-              dataKey={field}
-              stroke={COLORS[idx % COLORS.length]}
-              strokeWidth={2}
-              dot={false}
-              name={field}
-            />
-          ))}
-        </LineChart>
       );
 
     case 'table':
@@ -143,6 +150,52 @@ function getChartComponent(type, data, xField, yField, yFields, band, categoryFi
 
     case 'roc-curve':
       return <RocCurveChart data={data} xField={xField} yField={yField} />;
+
+    case 'bar-line-combo':
+      return (
+        <BarChart data={data}>
+          <CartesianGrid strokeDasharray="3 3" />
+          <XAxis dataKey={xField} />
+          <YAxis yAxisId="left" />
+          <YAxis yAxisId="right" orientation="right" />
+          <Tooltip />
+          <Legend />
+          <Bar yAxisId="left" dataKey={yFields[0]} fill="#8884d8" />
+          <Line yAxisId="right" type="monotone" dataKey={yFields[1]} stroke="#ff0000" strokeWidth={2} />
+        </BarChart>
+      );
+
+    case 'pie-multiple':
+      return (
+        <Box display="flex" flexWrap="wrap" gap={3} justifyContent="center">
+          {pieFields.map((field, idx) => {
+            const pieData = data[field.dataKey];
+            return (
+              <Box key={idx} width="220px" height="220px">
+                <Typography variant="caption" align="center">{field.title}</Typography>
+                <ResponsiveContainer width="100%" height="90%">
+                  <PieChart>
+                    <Tooltip />
+                    <Pie
+                      data={pieData}
+                      dataKey="value"
+                      nameKey={field.nameKey}
+                      outerRadius={80}
+                      label={({ name, percent }) =>
+                        `${name} (${(percent * 100).toFixed(1)}%)`
+                      }
+                    >
+                      {pieData.map((entry, i) => (
+                        <Cell key={`cell-${i}`} fill={COLORS[i % COLORS.length]} />
+                      ))}
+                    </Pie>
+                  </PieChart>
+                </ResponsiveContainer>
+              </Box>
+            );
+          })}
+        </Box>
+      );
 
     default:
       return null;

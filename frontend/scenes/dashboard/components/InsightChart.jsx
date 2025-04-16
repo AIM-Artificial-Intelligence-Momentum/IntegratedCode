@@ -1,4 +1,3 @@
-// scenes/dashboard/components/InsightChart.jsx
 'use client';
 
 import { useRef, useState } from "react";
@@ -9,16 +8,15 @@ import {
   Tab,
   Divider,
 } from "@mui/material";
-import SECTION_TITLES from "./constants";
 import { renderCharts } from "./chartHelpers";
 import useCsvData from "./hooks/useCsvData";
 import useCsvObserver from "./utils/useCsvObserver";
 
 export default function InsightChart({ onTabChange }) {
-  const dataBySection = useCsvData();
+  const dataBySection = useCsvData(); // 시나리오별 데이터
+  const scenarioTitles = Object.keys(dataBySection); // 동적 탭 생성
   const [activeTab, setActiveTab] = useState(0);
   const sectionRefs = useRef([]);
-  const scenarioData = useCsvData();
 
   const handleTabClick = (index) => {
     const targetRef = sectionRefs.current[index];
@@ -27,7 +25,7 @@ export default function InsightChart({ onTabChange }) {
     }
   };
 
-  // 스크롤 감지
+  // 스크롤 감지 → activeTab 업데이트
   useCsvObserver(sectionRefs, dataBySection, setActiveTab, onTabChange);
 
   return (
@@ -39,13 +37,13 @@ export default function InsightChart({ onTabChange }) {
           variant="scrollable"
           scrollButtons="auto"
         >
-          {SECTION_TITLES.map((title, idx) => (
+          {scenarioTitles.map((title, idx) => (
             <Tab key={idx} label={title} />
           ))}
         </Tabs>
       </Box>
 
-      {SECTION_TITLES.map((title, idx) => (
+      {scenarioTitles.map((title, idx) => (
         <Box
           key={idx}
           ref={(el) => (sectionRefs.current[idx] = el)}
