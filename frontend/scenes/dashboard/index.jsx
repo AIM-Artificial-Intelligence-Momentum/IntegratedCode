@@ -17,17 +17,38 @@ const Dashboard = () => {
 
   const handleDownloadPDF = async () => {
     if (!insightRef.current) return;
-
-    const canvas = await html2canvas(insightRef.current);
+  
+    const canvas = await html2canvas(insightRef.current, {
+      scale: 2, // 해상도 증가
+      useCORS: true
+    });
+  
     const imgData = canvas.toDataURL("image/png");
-
+  
     const pdf = new jsPDF("p", "mm", "a4");
     const pdfWidth = pdf.internal.pageSize.getWidth();
-    const pdfHeight = (canvas.height * pdfWidth) / canvas.width;
-
-    pdf.addImage(imgData, "PNG", 0, 0, pdfWidth, pdfHeight);
+    const pageHeight = pdf.internal.pageSize.getHeight();
+  
+    const imgWidth = pdfWidth;
+    const imgHeight = (canvas.height * imgWidth) / canvas.width;
+  
+    let heightLeft = imgHeight;
+    let position = 0;
+  
+    // 첫 페이지
+    pdf.addImage(imgData, "PNG", 0, position, imgWidth, imgHeight);
+    heightLeft -= pageHeight;
+  
+    while (heightLeft > 0) {
+      position = position - pageHeight;
+      pdf.addPage();
+      pdf.addImage(imgData, "PNG", 0, position, imgWidth, imgHeight);
+      heightLeft -= pageHeight;
+    }
+  
     pdf.save("insight-report.pdf");
   };
+  
 
   const handleDummyClick = () => {
     const dummyChartData = [
