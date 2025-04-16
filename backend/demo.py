@@ -15,6 +15,7 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+# 주의: 챗봇 대화를 통한 분석은 /api/chatbot/response 엔드포인트를 통해 반환됩니다.
 app.include_router(MLAnalysisAPI.router, prefix="/api/ml")
 app.include_router(ChatbotAPI.router, prefix="/api/chatbot")
 

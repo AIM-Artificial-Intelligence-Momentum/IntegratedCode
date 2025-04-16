@@ -3,6 +3,8 @@ from pydantic import BaseModel
 from typing import List
 import numpy as np
 
+# 주의: 챗봇 대화를 통한 분석은 /api/chatbot/response 엔드포인트를 통해 반환됩니다.
+
 # 아래 import 시 경로에 주의 (폴더 구조에 맞게 조정)
 from ModelPredictionModule.analysis_module import (
     predict_acc_sales_planning,
@@ -14,7 +16,6 @@ from ModelPredictionModule.analysis_module import (
     get_regional_stats,
     get_venue_scale_stats
 )
-
 
 router = APIRouter()
 
