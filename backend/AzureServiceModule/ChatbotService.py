@@ -300,6 +300,44 @@ class ChatbotService:
             if "error" in results:
                 return f"분석 중 오류가 발생했습니다: {results['error']}"
             
+            # 티켓 리스크 분석 (analysis_type 또는 risk_labels로 판단)
+            if analysis_type == "ticket_risk_selling" or "risk_labels" in results:
+                if "risk_labels" in results:
+                    risk_labels = results["risk_labels"]
+                    # 리스트가 아니면 리스트로 변환
+                    if not isinstance(risk_labels, list):
+                        risk_labels = [risk_labels]
+                    # 빈 리스트면 기본값 설정
+                    if not risk_labels:
+                        risk_labels = [0]
+                        
+                    try:
+                        risk_label = int(float(risk_labels[0]))
+                    except (ValueError, TypeError, IndexError):
+                        risk_label = 0
+                    
+                    # 0, 1, 2 값에 따른 리스크 레벨 설정
+                    risk_levels = {
+                        0: "낮음",
+                        1: "중간",
+                        2: "높음"
+                    }
+                    risk_level = risk_levels.get(risk_label, "알 수 없음")
+                    
+                    risk_text = f"⚠️ 티켓 판매 위험도: {risk_level}\n"
+                    
+                    # 리스크 레벨별 조언
+                    if risk_label == 0:
+                        advice = "현재 판매 추세가 양호합니다. 현재 전략을 유지하세요."
+                    elif risk_label == 1:
+                        advice = "판매 추세가 기대에 미치지 못합니다. 마케팅 활동 강화를 고려해보세요."
+                    elif risk_label == 2:
+                        advice = "판매 위험도가 높습니다. 추가 마케팅 활동과 프로모션을 적극 고려하세요."
+                    else:
+                        advice = "판매 추세를 분석할 충분한 데이터가 없습니다."
+                    
+                    return risk_text + advice
+            
             # 통계 분석 결과 해석
             if analysis_type == "genre_stats":
                 if "genre_stats" in results:
@@ -398,25 +436,6 @@ class ChatbotService:
                         
                 return "공연장 규모별 통계 데이터가 준비되었습니다."
             
-            # 티켓 리스크 분석 로직 세부 확인
-            if analysis_type == "ticket_risk_selling":
-                logger.debug(f"티켓 리스크 분석 세부 결과: {results}")
-                if "risk_labels" in results:
-                    risk_labels = results.get("risk_labels", [0])
-                    logger.debug(f"리스크 레이블: {risk_labels}, 타입: {type(risk_labels)}")
-                    risk_label = risk_labels[0] if len(risk_labels) > 0 else 0
-                    logger.debug(f"첫 번째 리스크 레이블: {risk_label}")
-                    risk_level = "낮음" if risk_label == 0 else "높음"
-                    risk_text = f"⚠️ 티켓 판매 위험도: {risk_level}\n"
-                    
-                    if risk_label == 1:
-                        advice = "추가 마케팅 활동이나 프로모션을 고려해보세요."
-                    else:
-                        advice = "현재 판매 추세가 양호합니다."
-                        
-                    return risk_text + advice
-            
-            # 기존 예측 분석 결과 해석 (이전 코드 유지)
             # 중첩된 predictions 구조 처리
             if "predictions" in results and isinstance(results["predictions"], dict):
                 nested_results = results["predictions"]
@@ -458,18 +477,6 @@ class ChatbotService:
                     
                     return roi_text + bep_text
                     
-            elif "risk_labels" in results:
-                risk_label = results.get("risk_labels", [0])[0]
-                risk_level = "낮음" if risk_label == 0 else "높음"
-                risk_text = f"⚠️ 티켓 판매 위험도: {risk_level}\n"
-                
-                if risk_label == 1:
-                    advice = "추가 마케팅 활동이나 프로모션을 고려해보세요."
-                else:
-                    advice = "현재 판매 추세가 양호합니다."
-                    
-                return risk_text + advice
-                
             return "분석 결과를 해석할 수 없습니다."
             
         except Exception as e:
