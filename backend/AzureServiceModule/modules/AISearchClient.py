@@ -26,7 +26,7 @@ class AISearchService:
                         "parameters": {
                             "endpoint": self.search_endpoint,
                             "index_name": self.search_index,
-                            "semantic_configuration": "stage4-index-semantic-configuration",
+                            "semantic_configuration": f"{self.search_index}-semantic-configuration",
                             "query_type": "semantic",
                             "in_scope": True,
                             "filter": None,
