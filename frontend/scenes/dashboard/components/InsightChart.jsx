@@ -1,3 +1,4 @@
+/// scenes/dashboard/components/InsightCharts.jsx
 'use client';
 
 import { useRef, useState } from "react";

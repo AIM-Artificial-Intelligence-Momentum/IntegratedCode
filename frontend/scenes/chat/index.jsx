@@ -1,3 +1,4 @@
+// scenes/chat/index.jsx
 "use client";
 
 import { useState } from "react";
