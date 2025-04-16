@@ -79,3 +79,78 @@ analysis_results
 					3 : 448.5381164550781
 					4 : 598.5381164550781
 ```
+
+```
+IntegratedCode
+├─ backend
+│  ├─ AzureServiceModule
+│  │  ├─ AzureSQLClient.py
+│  │  ├─ ChatbotService.py
+│  │  ├─ config
+│  │  │  ├─ PromptConfig.py
+│  │  │  ├─ VariableConfig.py
+│  │  │  └─ __init__.py
+│  │  └─ modules
+│  │     ├─ AISearchClient.py
+│  │     ├─ AzureOpenAIClient.py
+│  │     ├─ IntentClassifier.py
+│  │     ├─ PromptGenerator.py
+│  │     ├─ StageDetector.py
+│  │     └─ VariableExtractor.py
+│  ├─ demo.py
+│  ├─ gradio_chat.py
+│  ├─ ModelPredictionModule
+│  │  ├─ analysis_module.py
+│  │  ├─ models
+│  │  │  ├─ kmeans_audience_seg.pkl
+│  │  │  ├─ rf_cls_ticket_risk.pkl
+│  │  │  ├─ xgb_reg_accumulated_sales_planning.pkl
+│  │  │  ├─ xgb_reg_accumulated_sales_selling.pkl
+│  │  │  ├─ xgb_reg_roi_bep_planning.pkl
+│  │  │  └─ xgb_reg_roi_bep_selling.pkl
+│  │  ├─ test_analysis.py
+│  │  ├─ test_stats.py
+│  │  └─ ticket_risk_roc_pr.py
+│  ├─ requirements.txt
+│  └─ routes
+│     ├─ ChatbotAPI.py
+│     └─ MLAnalysisAPI.py
+├─ frontend
+│  ├─ components
+│  │  ├─ AIBot.js
+│  │  ├─ ChartBar.js
+│  │  ├─ ChartLine.js
+│  │  ├─ ChartPie.js
+│  │  ├─ Charts.js
+│  │  ├─ ChartVisualizer.js
+│  │  └─ Sidebar.js
+│  ├─ css
+│  │  └─ style.css
+│  ├─ eslint.config.mjs
+│  ├─ index.html
+│  ├─ js
+│  │  ├─ chart.js
+│  │  └─ chatbot.js
+│  ├─ jsconfig.json
+│  ├─ next.config.mjs
+│  ├─ package-lock.json
+│  ├─ package.json
+│  ├─ postcss.config.mjs
+│  ├─ public
+│  │  ├─ file.svg
+│  │  ├─ globe.svg
+│  │  ├─ next.svg
+│  │  ├─ vercel.svg
+│  │  └─ window.svg
+│  └─ src
+│     └─ app
+│        ├─ api
+│        │  └─ chat
+│        │     └─ route.js
+│        ├─ favicon.ico
+│        ├─ globals.css
+│        ├─ layout.js
+│        └─ page.js
+└─ README.md
+
+```

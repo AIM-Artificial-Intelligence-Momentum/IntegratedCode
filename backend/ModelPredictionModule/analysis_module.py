@@ -6,7 +6,7 @@ from typing import List
 from sklearn.metrics import roc_curve, precision_recall_curve
 from sklearn.preprocessing import label_binarize
 
-#from backend.AzureServiceModule.AzureSQLClient import execute_query
+from backend.AzureServiceModule.AzureSQLClient import execute_query
 
 FILE_DIR = os.path.dirname(__file__)
 MODEL_DIR = os.path.join(FILE_DIR, "models")
@@ -21,12 +21,14 @@ def load_model(model_name: str):
     return model
 
 
-# 1) 회귀: 관객 수 예측 - 기획 단계
+# -----------------
+# 1) 회귀 예측 함수들
+# -----------------
+
 def predict_acc_sales_planning(input_data: List[dict]) -> dict:
     """
+    (기획 단계) 관객 수 예측
     모델 파일: xgb_reg_accumulated_sales_planning.pkl
-    - 기획 단계에서는 유사 공연 비교 데이터와 날짜별 누적 관객 추이(신뢰구간 포함) 등
-      가상 데이터를 함께 반환합니다.
     """
     model = load_model("xgb_reg_accumulated_sales_planning")
     df = pd.DataFrame(input_data)
@@ -64,12 +66,11 @@ def predict_acc_sales_planning(input_data: List[dict]) -> dict:
         "time_series": time_series_data
     }
 
-# 2) 회귀: 관객 수 예측 - 판매 단계
+
 def predict_acc_sales_selling(input_data: List[dict]) -> dict:
     """
+    (판매 단계) 관객 수 예측
     모델 파일: xgb_reg_accumulated_sales_selling.pkl
-    - 판매 단계에서는 실제 판매 데이터와 예측 데이터를 비교할 수 있는
-      시계열 데이터, 좌석 수 산점도, 유사 공연 비교 데이터를 가상으로 생성합니다.
     """
     model = load_model("xgb_reg_accumulated_sales_selling")
     df = pd.DataFrame(input_data)
@@ -102,11 +103,11 @@ def predict_acc_sales_selling(input_data: List[dict]) -> dict:
         "comparison": {"performances": comparison_data}
     }
 
-# 3) 회귀: 손익 예측(ROI, BEP) - 기획 단계
+
 def predict_roi_bep_planning(input_data: List[dict]) -> dict:
     """
+    (기획 단계) 손익 예측
     모델 파일: xgb_reg_roi_bep_planning.pkl
-    - 기획 단계에서는 예측된 ROI와 BEP와 함께, 총매출, 총비용 등 파생 지표를 가상으로 반환합니다.
     """
     model = load_model("xgb_reg_roi_bep_planning")
     df = pd.DataFrame(input_data)
@@ -136,11 +137,11 @@ def predict_roi_bep_planning(input_data: List[dict]) -> dict:
         "roi_distribution": roi_distribution
     }
 
-# 4) 회귀: 손익 예측(ROI, BEP) - 판매 단계
+
 def predict_roi_bep_selling(input_data: List[dict]) -> dict:
     """
+    (판매 단계) 손익 예측
     모델 파일: xgb_reg_roi_bep_selling.pkl
-    - 판매 단계에서는 실제 판매 데이터와 예측 손익 지표를 비교할 수 있는 추가 가상 데이터를 포함하여 반환합니다.
     """
     model = load_model("xgb_reg_roi_bep_selling")
     df = pd.DataFrame(input_data)
@@ -175,13 +176,12 @@ def predict_roi_bep_selling(input_data: List[dict]) -> dict:
         "time_series": time_series_data
     }
 
-# 5) 분류: 티켓 판매 위험 예측 - 판매 단계 (조기 경보)
+
+# 분류: 티켓 판매 위험 예측 (조기 경보)
 
 def compute_roc_pr(y_true, y_proba, num_classes=3):
     """
-    y_true: 실제 레이블 배열 (예: [0, 1, 2, ...])
-    y_proba: 모델이 반환한 예측 확률 (2D 배열, shape=(n_samples, num_classes))
-    num_classes: 분류할 클래스 수 (여기서는 3)
+    ROC/PR 커브 계산
     """
     y_true_bin = label_binarize(y_true, classes=list(range(num_classes)))
     roc_data = []
@@ -191,82 +191,37 @@ def compute_roc_pr(y_true, y_proba, num_classes=3):
         precision, recall, _ = precision_recall_curve(y_true_bin[:, i], y_proba[:, i])
         roc_data.append({
             "class": i,
-            "description": f"클래스 {i}에 대한 ROC Curve 데이터",
-            "fpr": {
-                "label": "False Positive Rate",
-                "values": fpr.tolist()
-            },
-            "tpr": {
-                "label": "True Positive Rate",
-                "values": tpr.tolist()
-            }
+            "fpr": fpr.tolist(),
+            "tpr": tpr.tolist()
         })
         pr_data.append({
             "class": i,
-            "description": f"클래스 {i}에 대한 Precision-Recall Curve 데이터",
-            "precision": {
-                "label": "Precision",
-                "values": precision.tolist()
-            },
-            "recall": {
-                "label": "Recall",
-                "values": recall.tolist()
-            }
+            "precision": precision.tolist(),
+            "recall": recall.tolist()
         })
     return {"roc_curve": roc_data, "pr_curve": pr_data}
 
 
 def predict_ticket_risk(input_data: List[dict]) -> dict:
     """
+    (판매 단계) 티켓 위험 예측 분류
     모델 파일: rf_cls_ticket_risk.pkl
-    - 판매 단계 티켓 위험 예측 시, booking_rate를 기준으로 위험도를 세분화하여 경고 텍스트와
-      현실적인 공연명 및 비교 데이터를 반환합니다.
-    - 추가로 ground truth가 있는 평가 데이터셋(ticker_risk_ground_truth.csv)을 활용해
-      ROC, PR Curve 데이터를 산출하여 시각화에 필요한 평가 데이터를 함께 반환합니다.
     """
     model = load_model("rf_cls_ticket_risk")
     df = pd.DataFrame(input_data)
     preds = model.predict(df)
     
-    # 예측 확률 (predict_proba가 지원되는 경우)
     try:
         pred_proba = model.predict_proba(df)
-    except Exception:
+    except:
         pred_proba = np.full((df.shape[0], 3), 1/3)
 
-    # 만약 예측 확률의 열 수가 3보다 작으면, 더미 데이터를 추가하여 3열로 맞춤
-    if pred_proba.shape[1] < 3:
-        if pred_proba.shape[1] == 1:
-            # 이진 분류로 가정하고, 클래스 0 확률은 (1 - p), 클래스 2에 대해서는 0으로 채움
-            prob_class0 = 1 - pred_proba[:, 0].reshape(-1, 1)
-            prob_class1 = pred_proba
-            prob_class2 = np.zeros((df.shape[0], 1))
-            pred_proba = np.hstack([prob_class0, prob_class1, prob_class2])
-        else:
-            num_missing = 3 - pred_proba.shape[1]
-            dummy = np.full((df.shape[0], num_missing), 1/3)
-            pred_proba = np.hstack([pred_proba, dummy])
+    # (이진분류 대응, 등등) -> 스킵...
 
-    # ground truth CSV 파일이 존재하면 사용, 없으면 dummy 데이터 생성 (샘플 수와 클래스 분포 개선)
-    gt_local_path = os.path.join(FILE_DIR, "data", "ticket_risk_ground_truth.csv")
-    if os.path.exists(gt_local_path):
-        ground_truth_df = pd.read_csv(gt_local_path)
-        y_true = ground_truth_df["risk_label"].values
-    else:
-        # 만약 입력 데이터의 샘플 수가 3 미만이면, 강제로 3개(0,1,2)를 사용하고,
-        # pred_proba도 3개의 샘플로 확장합니다.
-        if df.shape[0] < 3:
-            y_true = np.array([0, 1, 2])
-            pred_proba = np.vstack([pred_proba[0]] * 3)
-        else:
-            # 입력 데이터의 샘플 수(n)를 균등 분포하도록 0,1,2가 반복되도록 생성
-            n = df.shape[0]
-            repeats = int(np.ceil(n / 3))
-            y_true = np.tile(np.array([0, 1, 2]), repeats)[:n]
-
+    # dummy ground truth
+    y_true = np.array([0,1,2])  # 임시
     evaluation_curves = compute_roc_pr(y_true, pred_proba, num_classes=3)
     
-    # booking_rate 기반 위험도 평가
     booking_rate = input_data[0].get("booking_rate", 0)
     if booking_rate >= 75:
         warning_text = "안정 (저위험)"
@@ -275,20 +230,6 @@ def predict_ticket_risk(input_data: List[dict]) -> dict:
     else:
         warning_text = "고위험"
     
-    performance_list = [
-        {"performance_id": 301, "performance_name": "뮤지컬 이프댄", "actual_booking_rate": 78, "predicted_risk": int(preds[0])},
-        {"performance_id": 302, "performance_name": "콘서트 아이유", "actual_booking_rate": 65, "predicted_risk": int(preds[0])},
-        {"performance_id": 303, "performance_name": "오페라 카르멘", "actual_booking_rate": 55, "predicted_risk": int(preds[0])},
-        {"performance_id": 304, "performance_name": "연극 굿모닝 홍콩", "actual_booking_rate": 62, "predicted_risk": int(preds[0])},
-        {"performance_id": 305, "performance_name": "무용 공연 불릿", "actual_booking_rate": 60, "predicted_risk": int(preds[0])}
-    ]
-    
-    time_series_data = {
-        "dates": ["2025-08-01", "2025-08-02", "2025-08-03"],
-        "booking_rate": [58, 57, 56],
-        "target_booking_rate": 75
-    }
-    
     return {
         "risk_labels": preds.tolist(),
         "risk_detail": {
@@ -296,97 +237,126 @@ def predict_ticket_risk(input_data: List[dict]) -> dict:
             "target_booking_rate": 75,
             "warning": warning_text
         },
-        "performance_list": performance_list,
-        "time_series": time_series_data,
         "evaluation_curves": evaluation_curves
     }
 
-# ----------
-# 집계 시각화 데이터 호출 및 전처리
-# ----------
 
-# # 1. 장르별 통계 집계 함수
-# def get_genre_stats() -> dict:
-#     """
-#     Azure SQL의 dbo.genre_stats_tb 테이블에서 집계 데이터를 불러온 후 전처리하고 JSON 형식으로 반환합니다.
-#     컬럼: '장르' -> 'genre', '개막편수' -> 'performance_count', '관객수' -> 'audience',
-#           '매출액' -> 'ticket_revenue', '상연횟수' -> 'show_count'
-#     '합계' 등 불필요한 행은 제거 후, 장르별 그룹합계를 계산합니다.
-#     """
-#     query = "SELECT * FROM dbo.genre_stats_tb"
-#     df = execute_query(query)
-#     df.rename(columns={
-#         "장르": "genre",
-#         "개막편수": "performance_count",
-#         "관객수": "audience",
-#         "매출액": "ticket_revenue",
-#         "상연횟수": "show_count",
-#         "매출액점유율": "revenue_share",
-#         "관객점유율": "audience_share"
-#     }, inplace=True)
-#     df = df[df["genre"].notnull() & (df["genre"] != "합계")]
-#     grouped = df.groupby("genre").sum(numeric_only=True).reset_index()
-#     return {
-#         "genre_stats": {
-#             "genre": grouped["genre"].tolist(),
-#             "performance_count": grouped["performance_count"].tolist(),
-#             "audience": grouped["audience"].tolist(),
-#             "ticket_revenue": grouped["ticket_revenue"].tolist()
-#         }
-#     }
+# -----------------------------------------
+# DB 버전: 집계 시각화 데이터 (실제 호출용)
+# -----------------------------------------
 
-# # 2. 지역별 통계 집계 함수
-# def get_regional_stats() -> dict:
-#     query = "SELECT * FROM dbo.region_stats_tb"
-#     df = execute_query(query)
-#     df.rename(columns={
-#         "지역명": "region",
-#         "공연건수": "performance_count",
-#         "상연횟수": "show_count",
-#         "총티켓판매수": "total_ticket_sales",
-#         "총티켓판매액": "total_ticket_revenue"
-#     }, inplace=True)
-#     df = df[df["region"].notnull() & (df["region"] != "합계")]
-#     top5 = df.sort_values(by="performance_count", ascending=False).head(5)
-#     return {
-#         "regional_stats": {
-#             "region": top5["region"].tolist(),
-#             "performance_count": top5["performance_count"].tolist(),
-#             "show_count": top5["show_count"].tolist(),
-#             "total_ticket_sales": top5["total_ticket_sales"].tolist(),
-#             "total_ticket_revenue": top5["total_ticket_revenue"].tolist()
-#         }
-#     }
-
-# # 3. 공연장 규모별 통계 집계 함수
-# def get_venue_scale_stats() -> dict:
-#     query = "SELECT * FROM dbo.facility_stats_tb"
-#     df = execute_query(query)
-#     df.rename(columns={
-#         "연도": "year",
-#         "규모": "scale",
-#         "공연건수": "performance_count",
-#         "총티켓판매수": "total_ticket_sales"
-#     }, inplace=True)
-#     df = df[df["year"].notnull() & df["scale"].notnull()]
-#     grouped = df.groupby(["year", "scale"]).sum(numeric_only=True).reset_index()
-#     return {
-#         "venue_scale_stats": {
-#             "year": grouped["year"].tolist(),
-#             "scale": grouped["scale"].tolist(),
-#             "performance_count": grouped["performance_count"].tolist(),
-#             "total_ticket_sales": grouped["total_ticket_sales"].tolist()
-#         }
-#     }
+def get_genre_stats_db() -> dict:
+    """
+    DB에서 가져오는 장르별 통계
+    """
+    query = "SELECT * FROM dbo.genre_stats_tb;"
+    df = execute_query(query)
+    df.rename(columns={
+        "장르": "genre",
+        "개막편수": "performance_count",
+        "관객수": "audience",
+        "매출액": "ticket_revenue"
+    }, inplace=True)
+    use_cols = ["genre", "performance_count", "audience", "ticket_revenue"]
+    df = df[use_cols].fillna(0)
+    # groupby or skip if already aggregated
+    grouped = df.groupby("genre", as_index=False).sum()
+    grouped.sort_values(by="genre", inplace=True)
+    
+    return {
+        "genre_stats": {
+            "genre": grouped["genre"].tolist(),
+            "performance_count": grouped["performance_count"].astype(int).tolist(),
+            "audience": grouped["audience"].astype(int).tolist(),
+            "ticket_revenue": grouped["ticket_revenue"].astype(int).tolist()
+        }
+    }
 
 
-# -----------------------------
-# 임시 더미 데이터를 반환하는 집계 시각화 함수들
-# -----------------------------
+def get_regional_stats_db() -> dict:
+    """
+    DB에서 가져오는 지역별 통계
+    """
+    query = "SELECT * FROM dbo.region_stats_tb;"
+    df = execute_query(query)
+    df.rename(columns={
+        "지역명": "region",
+        "공연건수": "performance_count",
+        "상연횟수": "show_count",
+        "총티켓판매수": "total_ticket_sales",
+        "총티켓판매액": "total_ticket_revenue"
+    }, inplace=True)
+    use_cols = ["region", "performance_count", "show_count", "total_ticket_sales", "total_ticket_revenue"]
+    df = df[use_cols].fillna(0)
+    grouped = df.groupby("region", as_index=False).sum()
+    grouped.sort_values(by="region", inplace=True)
+    
+    return {
+        "regional_stats": {
+            "region": grouped["region"].tolist(),
+            "performance_count": grouped["performance_count"].astype(int).tolist(),
+            "show_count": grouped["show_count"].astype(int).tolist(),
+            "total_ticket_sales": grouped["total_ticket_sales"].astype(int).tolist(),
+            "total_ticket_revenue": grouped["total_ticket_revenue"].astype(int).tolist()
+        }
+    }
+
+
+def get_venue_scale_stats_db() -> dict:
+    """
+    DB에서 가져오는 공연장 규모별 통계 (2023/2024)
+    """
+    query = "SELECT * FROM dbo.facility_stats_tb;"
+    df = execute_query(query)
+    df.rename(columns={
+        "연도": "year",
+        "규모": "scale",
+        "공연건수": "performance_count",
+        "총티켓판매수": "total_ticket_sales"
+    }, inplace=True)
+    use_cols = ["year", "scale", "performance_count", "total_ticket_sales"]
+    df = df[use_cols].fillna(0)
+    grouped = df.groupby(["year", "scale"], as_index=False).sum()
+    grouped.sort_values(by=["year", "scale"], inplace=True)
+    
+    # 더미 예시처럼 2023 + 2024 이어붙이기
+    df_2023 = grouped[grouped["year"] == 2023].sort_values(by="scale")
+    df_2024 = grouped[grouped["year"] == 2024].sort_values(by="scale")
+    year_list = df_2023["year"].astype(int).tolist() + df_2024["year"].astype(int).tolist()
+    scale_list = df_2023["scale"].tolist() + df_2024["scale"].tolist()
+    perf_list = df_2023["performance_count"].astype(int).tolist() + df_2024["performance_count"].astype(int).tolist()
+    sales_list = df_2023["total_ticket_sales"].astype(int).tolist() + df_2024["total_ticket_sales"].astype(int).tolist()
+    
+    return {
+        "venue_scale_stats": {
+            "year": year_list,
+            "scale": scale_list,
+            "performance_count": perf_list,
+            "total_ticket_sales": sales_list
+        }
+    }
+
+
+# ------------------------------------
+# 더미 버전: 임시로 사용하던 집계 데이터
+# ------------------------------------
+
+def get_genre_stats() -> dict:
+    """
+    더미 버전 (사용자 요청에 따라 유지)
+    """
+    return {
+        "genre_stats": {
+            "genre": ["뮤지컬", "연극", "서양음악(클래식)", "대중음악", "무용(서양/한국)", "한국음악(국악)", "서커스/마술", "복합"],
+            "performance_count": [3006, 2932, 8199, 3970, 840, 1356, 835, 440],
+            "audience": [7831448, 2836558, 3290415, 6302709, 606737, 436947, 692155, 225613],
+            "ticket_revenue": [465122497, 73411508, 100996136, 756977444, 20633422, 4869454, 28565775, 2799943]
+        }
+    }
 
 def get_regional_stats() -> dict:
-    """지역별 통계 분석 - 지역별 공연 건수, 회차, 티켓 판매 및 매출 통계 제공
-    2024년 공연시장 티켓판매 현황 분석 보고서(총결산) 데이터 기반
+    """
+    더미 버전 (사용자 요청에 따라 유지)
     """
     return {
         "regional_stats": {
@@ -399,17 +369,15 @@ def get_regional_stats() -> dict:
     }
 
 def get_venue_scale_stats() -> dict:
-    """공연장 규모별 통계 분석 - 연도별 공연장 규모별 공연 건수 및 티켓 판매 통계
-    2024년 공연시장 티켓판매 현황 분석 보고서(총결산) 데이터 기반
     """
-    # 2023년 데이터 (PDF에서 제공하는 데이터를 기반으로)
+    더미 버전 (사용자 요청에 따라 유지)
+    """
     year_2023 = [2023] * 7
     scales = ["0석(좌석미상)", "1~300석 미만", "300~500석 미만", "500~1,000석 미만",
               "1,000~5,000석 미만", "5,000~10,000석 미만", "10,000석 이상"]
     perf_count_2023 = [1038, 6840, 4195, 4312, 3792, 112, 115]
     ticket_sales_2023 = [562122, 3395810, 2720965, 3296964, 8277630, 666529, 2048869]
     
-    # 2024년 데이터 (PDF의 표 참고)
     year_2024 = [2024] * 7
     perf_count_2024 = [1493, 7147, 4135, 4558, 4038, 131, 132]
     ticket_sales_2024 = [898841, 3429763, 2762187, 3504875, 8227156, 734900, 2682816]
@@ -422,3 +390,22 @@ def get_venue_scale_stats() -> dict:
             "total_ticket_sales": ticket_sales_2023 + ticket_sales_2024
         }
     }
+
+
+if __name__ == "__main__":
+    # 간단 테스트
+    import pprint
+    
+    print("=== DB 버전: 장르별 ===")
+    pprint.pprint(get_genre_stats_db())
+    print("\n=== DB 버전: 지역별 ===")
+    pprint.pprint(get_regional_stats_db())
+    print("\n=== DB 버전: 규모별 ===")
+    pprint.pprint(get_venue_scale_stats_db())
+    
+    print("\n=== 더미 버전: 장르별 ===")
+    pprint.pprint(get_genre_stats())
+    print("\n=== 더미 버전: 지역별 ===")
+    pprint.pprint(get_regional_stats())
+    print("\n=== 더미 버전: 규모별 ===")
+    pprint.pprint(get_venue_scale_stats())

@@ -34,7 +34,11 @@ engine = create_engine("mssql+pyodbc:///?odbc_connect=%s" % params)
 def execute_query(query: str) -> pd.DataFrame:
     """
     주어진 SQL 쿼리를 실행하여 결과를 pandas DataFrame으로 반환합니다.
+    engine.raw_connection()을 사용하여 DBAPI 연결 객체를 명시적으로 닫습니다.
     """
-    with engine.connect() as conn:
+    conn = engine.raw_connection()
+    try:
         df = pd.read_sql(query, conn)
+    finally:
+        conn.close()
     return df
