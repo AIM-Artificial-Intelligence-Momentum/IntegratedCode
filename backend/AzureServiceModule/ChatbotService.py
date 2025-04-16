@@ -189,7 +189,7 @@ class ChatbotService:
         
         return formatted_vars
         
-    # API 호출 실패 시 가상 응답 제공 함수
+    # 호출 실패 시 가상 응답 제공 함수
     def _get_fallback_response(self, analysis_type):
         """API 호출 실패 시 가상 응답 생성"""
         logger.info(f"{analysis_type}에 대한 가상 응답 생성")
@@ -236,7 +236,7 @@ class ChatbotService:
         return {"error": "알 수 없는 분석 유형"}
 
     
-    # ML API 호출 함수
+    # ML 직접 호출 (api/chatbot/response 로 결과 데이터 반환)
     async def _call_ml_api(self, analysis_type, formatted_vars):
         """ML API 내부 직접 호출"""
         try:
@@ -490,7 +490,7 @@ class ChatbotService:
         if not isinstance(history, list):
             history = []
 
-        # 1. 사용자 의도 분류: 수집 / 검색 / 분석 / 혼합
+        # 1. 사용자 의도 분류: 수집 / 검색 / 분석
         intent = self.classifier.classify_intent(user_input)
         stage = self.detector.detect_stage(user_input)
         
@@ -502,7 +502,7 @@ class ChatbotService:
         analysis_results = {}
 
         # 2-1. JSON 변수 수집
-        if intent in ["수집", "혼합"]:
+        if intent in ["수집"]:
             extracted = self.extractor.extract_variables(user_input, fallback_key=self.last_asked_key)
             logger.debug(f"추출된 변수: {extracted}")
             
@@ -511,7 +511,7 @@ class ChatbotService:
                     self.collected_vars[key] = val
 
         # 2-2. 분석 요청 처리 - 의도가 "분석" 또는 "혼합"일 때만 수행
-        if intent in ["분석", "혼합"]:
+        if intent in ["분석"]:
             analysis_types = self._determine_analysis_type(user_input, stage)
             logger.debug(f"결정된 분석 유형: {analysis_types}")
             
@@ -546,7 +546,7 @@ class ChatbotService:
         reply_parts.append(next_question)
 
         # 3. AI 문서 검색
-        if intent in ["검색", "혼합"]:
+        if intent in ["검색"]:
             summary = self.search.query(user_input)
             reply_parts.append("📖 관련 문서 요약:\n\n" + summary)
 
