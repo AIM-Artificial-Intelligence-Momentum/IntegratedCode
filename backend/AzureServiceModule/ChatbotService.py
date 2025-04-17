@@ -564,7 +564,7 @@ class ChatbotService:
         if intent in ["검색"]:
             summary = self.search.query(user_input)
             self.summary = summary
-            # reply_parts.append("📖 관련 문서 요약:\n\n" + summary)
+            reply_parts.append("📖 관련 문서 요약:\n\n" + summary)
 
         # 4. 응답 및 상태 반환
         full_reply = "\n\n".join(reply_parts)
