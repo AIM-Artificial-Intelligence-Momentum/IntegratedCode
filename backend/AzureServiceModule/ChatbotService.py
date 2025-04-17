@@ -545,10 +545,20 @@ class ChatbotService:
                 logger.warning("분석 결과가 비어있음")
 
         # 2-3. 추가 유도 질문 생성
-        next_question, next_key = self.prompter.generate(self.collected_vars, user_input, stage)
-        if next_key:
-            self.last_asked_key = next_key
-        reply_parts.append(next_question)
+        if intent in ["수집", "검색"]:
+            next_question, next_key = self.prompter.generate(self.collected_vars, user_input, stage)
+
+            if next_question and next_question not in reply_parts:
+                reply_parts.append(next_question)
+
+            if next_key:
+                self.last_asked_key = next_key
+
+        # 분석일 경우, 추가 멘트 한 줄
+        elif intent == "분석":
+            analysis_followup_comment = "추가적으로 분석하고 싶은 항목이 있다면 더 말씀해 주세요!"
+            if analysis_followup_comment not in reply_parts:
+                reply_parts.append(analysis_followup_comment)
 
         # 3. AI 문서 검색
         if intent in ["검색"]:
