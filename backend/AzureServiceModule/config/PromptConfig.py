@@ -14,14 +14,14 @@ def get_prompt_generator(collected_list: str, next_variable_prompt: str) -> str:
                 1. 기획 단계 (Planning Stage)
                 → 공연 기획을 준비 중인 사용자로부터 다음 변수들을 수집하세요:
                 - genre, region, start_date, capacity, star_power, ticket_price,
-                marketing_budget, sns_mention_count, production_cost, variable_cost_rate
+                marketing_budget, sns_mention_count, production_cost, variable_cost_rate, duration
 
                 2. 판매 단계 (Sales Stage)
                 → 기획을 완료하고 현재 판매 데이터를 분석하려는 사용자로부터 다음 변수들을 수집하세요:
                 - genre, region, start_date, capacity, star_power, ticket_price,
                 marketing_budget, sns_mention_count, daily_sales, booking_rate,
                 ad_exposure, production_cost, variable_cost_rate, accumulated_sales,
-                sns_mention_daily, promo_event_flag
+                sns_mention_daily, promo_event_flag, duration
 
                 ✅ 현재 수집된 변수: {collected_list}
                 ⏳ 남은 변수 중 하나만 골라 자연스럽게 유도하세요.
@@ -50,6 +50,7 @@ def get_prompt_generator(collected_list: str, next_variable_prompt: str) -> str:
                 - sns_mention_daily: 일일 SNS 언급량
                 - accumulated_sales: 현재까지의 누적 티켓 판매량
                 - promo_event_flag: 프로모션 이벤트 진행 여부(True/False)
+                - duration : 공연이 진행되는 기간
 
                 📌 'production_cost'와 'marketing_budget'관련: 
                 - 'production_cost'(제작비)와 'marketing_budget'(마케팅 예산)은 별개의 변수이므로 명확히 구분하여 질문하세요.(예: "제작비는 얼마인가요?" vs "마케팅 예산은 얼마인가요?")

@@ -1,7 +1,7 @@
 numeric_keys = [
     "capacity", "star_power", "ticket_price", "marketing_budget", "sns_mention_count",
     "daily_sales", "booking_rate", "ad_exposure", "sns_mention_daily",
-    "production_cost", "variable_cost_rate", "accumulated_sales"
+    "production_cost", "variable_cost_rate", "accumulated_sales", "duration"
 ]
 date_keys = ["start_date"]
 
@@ -20,12 +20,12 @@ required_keys = numeric_keys + date_keys + list(categorical_keys.keys())
 planning_stage_keys = [
     "genre", "region", "start_date", "capacity", "star_power",
     "ticket_price", "marketing_budget", "sns_mention_count",
-    "production_cost", "variable_cost_rate"
+    "production_cost", "variable_cost_rate", "duration"
 ]
 # 판매 단계키 
 sales_stage_keys = [
     "genre", "region", "start_date", "capacity", "star_power",
     "ticket_price", "marketing_budget", "sns_mention_count",
     "daily_sales", "booking_rate", "ad_exposure", "production_cost",
-    "variable_cost_rate", "accumulated_sales", "sns_mention_daily", "promo_event_flag"
+    "variable_cost_rate", "accumulated_sales", "sns_mention_daily", "promo_event_flag", "duration"
 ]
