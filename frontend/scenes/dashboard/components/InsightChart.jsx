@@ -51,7 +51,7 @@ export default function InsightChart({ onTabChange, externalData, externalStruct
   // 탭 추가(Structured Insights,Real Insights) 
   const extraTabs = [];
   if (structuredInfo) extraTabs.push("🤖 GPT가 수집한 변수");
-  if (realChartData) extraTabs.push("🖥️ 인사이트 정리");
+  // if (realChartData) extraTabs.push("🖥️ 인사이트 정리");
   if (aiSearchSummary) extraTabs.push("📖 관련 문서 요약")
   const allTabs = [...scenarioTitles, ...extraTabs];
 
@@ -94,13 +94,14 @@ export default function InsightChart({ onTabChange, externalData, externalStruct
               {title}
             </Typography>
 
-            {isStructured ? (
+            {/* {isStructured ? (
               Object.entries(structuredInfo).map(([key, value]) => (
                 <Typography key={key} variant="h5" sx={{ mb: 1 }}>
                   <strong>{key}</strong>: {String(value)}
                 </Typography>
               ))
-            ) : isReal ? (
+            ) :  */}
+            { isReal ? (
               <Box
                 component="pre"
                 sx={{
