@@ -6,7 +6,7 @@ from typing import List
 from sklearn.metrics import roc_curve, precision_recall_curve
 from sklearn.preprocessing import label_binarize
 
-from AzureServiceModule.AzureSQLClient import execute_query
+from backend.AzureServiceModule.AzureSQLClient import execute_query
 
 FILE_DIR = os.path.dirname(__file__)
 MODEL_DIR = os.path.join(FILE_DIR, "models")
@@ -179,27 +179,27 @@ def predict_roi_bep_selling(input_data: List[dict]) -> dict:
 
 # 분류: 티켓 판매 위험 예측 (조기 경보)
 
-def compute_roc_pr(y_true, y_proba, num_classes=3):
-    """
-    ROC/PR 커브 계산
-    """
-    y_true_bin = label_binarize(y_true, classes=list(range(num_classes)))
-    roc_data = []
-    pr_data = []
-    for i in range(num_classes):
-        fpr, tpr, _ = roc_curve(y_true_bin[:, i], y_proba[:, i])
-        precision, recall, _ = precision_recall_curve(y_true_bin[:, i], y_proba[:, i])
-        roc_data.append({
-            "class": i,
-            "fpr": fpr.tolist(),
-            "tpr": tpr.tolist()
-        })
-        pr_data.append({
-            "class": i,
-            "precision": precision.tolist(),
-            "recall": recall.tolist()
-        })
-    return {"roc_curve": roc_data, "pr_curve": pr_data}
+# def compute_roc_pr(y_true, y_proba, num_classes=3):
+#     """
+#     ROC/PR 커브 계산
+#     """
+#     y_true_bin = label_binarize(y_true, classes=list(range(num_classes)))
+#     roc_data = []
+#     pr_data = []
+#     for i in range(num_classes):
+#         fpr, tpr, _ = roc_curve(y_true_bin[:, i], y_proba[:, i])
+#         precision, recall, _ = precision_recall_curve(y_true_bin[:, i], y_proba[:, i])
+#         roc_data.append({
+#             "class": i,
+#             "fpr": fpr.tolist(),
+#             "tpr": tpr.tolist()
+#         })
+#         pr_data.append({
+#             "class": i,
+#             "precision": precision.tolist(),
+#             "recall": recall.tolist()
+#         })
+#     return {"roc_curve": roc_data, "pr_curve": pr_data}
 
 
 def predict_ticket_risk(input_data: List[dict]) -> dict:
@@ -219,8 +219,8 @@ def predict_ticket_risk(input_data: List[dict]) -> dict:
     # (이진분류 대응, 등등) -> 스킵...
 
     # dummy ground truth
-    y_true = np.array([0,1,2])  # 임시
-    evaluation_curves = compute_roc_pr(y_true, pred_proba, num_classes=3)
+    # y_true = np.array([0,1,2])  # 임시
+    # evaluation_curves = compute_roc_pr(y_true, pred_proba, num_classes=3)
     
     booking_rate = input_data[0].get("booking_rate", 0)
     if booking_rate >= 75:
@@ -236,9 +236,9 @@ def predict_ticket_risk(input_data: List[dict]) -> dict:
             "current_booking_rate": booking_rate,
             "target_booking_rate": 75,
             "warning": warning_text
-        },
-        "evaluation_curves": evaluation_curves
-    }
+        }}
+    #     "evaluation_curves": evaluation_curves
+    # }
 
 
 # -----------------------------------------
