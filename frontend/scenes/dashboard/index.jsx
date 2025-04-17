@@ -13,6 +13,8 @@ const InsightChart = dynamic(() => import("./components/InsightChart"), { ssr: f
 
 const Dashboard = () => {
   const [insightDataFromChatGpt, setInsightDataFromChatGpt] = useState([]);
+  const [structuredDataFromChatGpt, setStructuredDataFromChatGpt] = useState(null); 
+  const [realInsightFromChatGpt, setRealInsightFromChatGpt] = useState(null); 
   const insightRef = useRef();
 
   const handleDownloadPDF = async () => {
@@ -82,7 +84,11 @@ const Dashboard = () => {
   return (
     <Box m="10px">
       {/* ChatGPT 연결 */}
-      <ChatPage onUpdateInsights={setInsightDataFromChatGpt} />
+      {/* if (typeof onUpdateInsights === "function") {
+          onUpdateInsights(charts); } */}
+      {/* .analysis_results.accumulated_sales_planning.predictions 부분 
+          이걸 setInsightDataFromChatGpt(charts)로 실행하는 셈 */}
+      <ChatPage onUpdateInsights={setInsightDataFromChatGpt} setStructruedData={setStructuredDataFromChatGpt} setPlanningSummary={setRealInsightFromChatGpt} />
 
       {/* PDF 다운로드 + Dummy 버튼 */}
       <Box display="flex" justifyContent="flex-end" alignItems="center" my={2} gap={2}>
@@ -109,7 +115,7 @@ const Dashboard = () => {
         <Typography variant="h6" fontWeight="bold" mb={3}>
           Insight Report
         </Typography>
-        <InsightChart externalData={insightDataFromChatGpt} />
+        <InsightChart externalData={insightDataFromChatGpt} externalStructredData={structuredDataFromChatGpt} realInsightFromChatGpt={realInsightFromChatGpt}/>
       </Paper>
     </Box>
   );

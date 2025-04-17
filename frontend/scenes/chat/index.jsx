@@ -14,7 +14,7 @@ import SendIcon from "@mui/icons-material/Send";
 import ChatIcon from "@mui/icons-material/Chat";
 import CloseIcon from "@mui/icons-material/Close";
 
-export default function ChatPage({ onUpdateInsights, setPlanningSummary }) {
+export default function ChatPage({ onUpdateInsights, setPlanningSummary, setStructruedData }) {
   const [chatHistory, setChatHistory] = useState([
     {
       role: "assistant",
@@ -52,6 +52,7 @@ export default function ChatPage({ onUpdateInsights, setPlanningSummary }) {
       // 응답 표시
       const botReply = data.response_text || "응답 없음";
       setChatHistory((prev) => [...prev, { role: "assistant", content: botReply }]);
+      console.log(data);
 
       // 🔥 차트 데이터 연결
       if (data.analysis_results) {
@@ -60,7 +61,9 @@ export default function ChatPage({ onUpdateInsights, setPlanningSummary }) {
         if (typeof onUpdateInsights === "function") {
           onUpdateInsights(charts); // 👉 InsightChart.jsx로 데이터 전달
         }
-
+        if (typeof setStructruedData === "function") {
+          setStructruedData(data.structured_data); // 👉 InsightChart.jsx로 데이터 전달
+        }
         if (typeof setPlanningSummary === "function") {
           setPlanningSummary(data.analysis_results);
         }
