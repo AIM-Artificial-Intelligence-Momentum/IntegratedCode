@@ -17,6 +17,7 @@ import {
   Divider
 } from "@mui/material";
 import Link from "next/link";
+import Image from "next/image";
 import HomeOutlinedIcon from "@mui/icons-material/HomeOutlined";
 import SearchIcon from "@mui/icons-material/Search";
 import PeopleOutlinedIcon from "@mui/icons-material/PeopleOutlined";
@@ -48,8 +49,11 @@ const Sidebar = () => {
 
       <Drawer variant="persistent" anchor="left" open={isOpen}>
         <Box sx={{ width: 250 }}>
-          <Box display="flex" justifyContent="space-between" alignItems="center" p={2}>
-            <Typography variant="h6">Decision Mate</Typography>
+          <Box display="flex" alignItems="center" gap={1}>
+            <Image src="/logo.png" alt="logo" width={32} height={32} />
+            <Typography variant="h6" fontWeight="bold">
+              Decision Mate
+            </Typography>
             <IconButton onClick={toggleDrawer}>
               <MenuOutlinedIcon />
             </IconButton>
