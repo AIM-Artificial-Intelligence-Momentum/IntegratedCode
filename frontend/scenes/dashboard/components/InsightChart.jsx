@@ -61,6 +61,29 @@ export default function InsightChart({ onTabChange, externalData, externalStruct
       targetRef.scrollIntoView({ behavior: "smooth", block: "start" });
     }
   };
+  const salesStageKeyMap = {
+    genre: "장르",
+    region: "지역",
+    start_date: "공연 시작일",
+    capacity: "좌석 수",
+    star_power: "출연진 인기",
+    ticket_price: "티켓 가격",
+    marketing_budget: "마케팅 예산",
+    sns_mention_count: "SNS 언급량",
+    daily_sales: "일일 판매량",
+    booking_rate: "예매율",
+    ad_exposure: "광고 노출",
+    production_cost: "제작비",
+    variable_cost_rate: "변동비 비율",
+    accumulated_sales: "누적 판매량",
+    sns_mention_daily: "SNS 일일 언급량",
+    promo_event_flag: "프로모션 이벤트 여부",
+    duration: "공연 기간"
+  };
+  
+  function translateKeyToKorean(key) {
+    return salesStageKeyMap[key] || key;
+  }
 
   useCsvObserver(sectionRefs, dataBySection, setActiveTab, onTabChange);
 
@@ -96,8 +119,8 @@ export default function InsightChart({ onTabChange, externalData, externalStruct
 
             {isStructured ? (
               Object.entries(structuredInfo).map(([key, value]) => (
-                <Typography key={key} variant="h5" sx={{ mb: 1 }}>
-                  <strong>{key}</strong>: {String(value)}
+                <Typography key={key} variant="body1" sx={{ mb: 1, fontSize: "1.25rem" }}>
+                  <strong>{translateKeyToKorean(key)}</strong>: {String(value)}
                 </Typography>
               ))
             ) : 

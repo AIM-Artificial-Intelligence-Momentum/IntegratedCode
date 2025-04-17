@@ -1,5 +1,5 @@
 # backend/AzureServiceModule/ChatbotService.py
-
+from .util.CleanText import cleanText
 from .modules.AzureOpenAIClient import get_azure_openai_client
 from .modules.IntentClassifier import IntentClassifier
 from .modules.StageDetector import StageDetector
@@ -538,7 +538,7 @@ class ChatbotService:
             
             # 분석 결과 추가
             if analysis_results_text:
-                analysis_text = "## 📊 분석 결과\n\n" + "\n".join(analysis_results_text)
+                analysis_text = "📊 분석 결과\n\n" + "\n".join(analysis_results_text)
                 logger.debug(f"추가될 분석 결과: {analysis_text}")
                 reply_parts.append(analysis_text)
             else:
@@ -568,6 +568,7 @@ class ChatbotService:
 
         # 4. 응답 및 상태 반환
         full_reply = "\n\n".join(reply_parts)
+        full_reply = cleanText(full_reply)
         history.append((user_input, full_reply))
         
         logger.debug(f"최종 응답 구성 요소: {reply_parts}")
