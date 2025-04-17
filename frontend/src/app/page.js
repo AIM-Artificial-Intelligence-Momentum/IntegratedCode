@@ -3,7 +3,7 @@
 
 import { useState } from "react";
 import dynamic from "next/dynamic";
-import Sidebar from "scenes/global/Sidebar.jsx";
+import Sidebar from "../../scenes/global/Sidebar.jsx";
 import { CssBaseline } from "@mui/material";
 
 const Dashboard = dynamic(() => import("../../scenes/dashboard/index"), {
