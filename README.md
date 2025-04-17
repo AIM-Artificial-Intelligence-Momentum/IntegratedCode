@@ -7,6 +7,11 @@ cd backend
 pip install -r "requirements.txt"
 ```
 
+```bash
+cd frontend
+npm install nextjs react react-dom
+```
+
 <h2>터미널 2개 구동</h2>
 
 -터미널1
@@ -20,7 +25,6 @@ uvicorn demo:app --reload
 
 ```bash
 cd frontend
-npm install nextjs react react-dom
 npm run dev
 ```
 
