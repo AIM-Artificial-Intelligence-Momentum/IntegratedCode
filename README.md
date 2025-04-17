@@ -36,5 +36,4 @@ http://localhost:3000/
 
 <h2>실행된 화면</h2>
 
-![image](https://github.com/user-attachments/assets/76c7e331-87e1-40d2-938a-53011ddafe17)
-
+![image](https://github.com/user-attachments/assets/7e9e39dd-07f8-4261-9eba-81dfac9f3fa5)
