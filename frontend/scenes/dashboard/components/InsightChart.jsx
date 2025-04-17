@@ -96,7 +96,7 @@ export default function InsightChart({ onTabChange, externalData, externalStruct
 
             {isStructured ? (
               Object.entries(structuredInfo).map(([key, value]) => (
-                <Typography key={key} variant="body1" sx={{ mb: 1 }}>
+                <Typography key={key} variant="h5" sx={{ mb: 1 }}>
                   <strong>{key}</strong>: {String(value)}
                 </Typography>
               ))
