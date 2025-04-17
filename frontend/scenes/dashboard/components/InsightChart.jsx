@@ -94,28 +94,14 @@ export default function InsightChart({ onTabChange, externalData, externalStruct
               {title}
             </Typography>
 
-            {/* {isStructured ? (
+            {isStructured ? (
               Object.entries(structuredInfo).map(([key, value]) => (
                 <Typography key={key} variant="h5" sx={{ mb: 1 }}>
                   <strong>{key}</strong>: {String(value)}
                 </Typography>
               ))
-            ) :  */}
-            { isReal ? (
-              <Box
-                component="pre"
-                sx={{
-                  backgroundColor: "#f5f5f5",
-                  p: 2,
-                  borderRadius: 2,
-                  overflowX: "auto",
-                  fontFamily: "monospace",
-                  whiteSpace: "pre-wrap",
-                }}
-              >
-                {JSON.stringify(realChartData, null, 2)}
-              </Box>
-            ) : isAISearch ? (
+            ) : 
+            isAISearch ? (
               <Box
                 component="pre"
                 sx={{

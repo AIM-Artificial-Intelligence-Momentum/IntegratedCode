@@ -1,7 +1,7 @@
 # analysis_module.py  (예시 파일명)
 
 import pandas as pd
-from backend.AzureServiceModule.AzureSQLClient import execute_query
+from AzureServiceModule.AzureSQLClient import execute_query
 
 def get_genre_stats() -> dict:
     """

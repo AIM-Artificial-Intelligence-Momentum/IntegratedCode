@@ -3,7 +3,7 @@ import asyncio
 import os
 import json
 from dotenv import load_dotenv
-from backend.AzureServiceModule.ChatbotService import ChatbotService
+from AzureServiceModule.ChatbotService import ChatbotService
 import threading
 import uvicorn
 

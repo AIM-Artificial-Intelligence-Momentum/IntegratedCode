@@ -246,7 +246,7 @@ class ChatbotService:
         """ML API 내부 직접 호출"""
         try:
             # ML 모듈에서 함수 직접 임포트
-            from backend.ModelPredictionModule.analysis_module import (
+            from ModelPredictionModule.analysis_module import (
                 predict_acc_sales_planning,
                 predict_acc_sales_selling,
                 predict_roi_bep_planning,

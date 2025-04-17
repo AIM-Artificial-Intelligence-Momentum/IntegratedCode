@@ -1,4 +1,4 @@
-from backend.AzureServiceModule.AzureSQLClient import execute_query
+from AzureServiceModule.AzureSQLClient import execute_query
 import pandas as pd
 
 def get_genre_stats() -> dict:
