@@ -6,7 +6,7 @@ import dynamic from "next/dynamic";
 import Sidebar from "scenes/global/Sidebar.jsx";
 import { CssBaseline } from "@mui/material";
 
-const Dashboard = dynamic(() => import("scenes/dashboard/index.jsx"), {
+const Dashboard = dynamic(() => import("../../scenes/dashboard/index"), {
   ssr: false,
 });
 
