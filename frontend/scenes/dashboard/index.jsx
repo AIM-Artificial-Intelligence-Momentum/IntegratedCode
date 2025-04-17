@@ -15,6 +15,7 @@ const Dashboard = () => {
   const [insightDataFromChatGpt, setInsightDataFromChatGpt] = useState([]);
   const [structuredDataFromChatGpt, setStructuredDataFromChatGpt] = useState(null); 
   const [realInsightFromChatGpt, setRealInsightFromChatGpt] = useState(null); 
+  const [aisearchFromChatGpt, setAIsearchFromChatGpt] = useState(null); 
   const insightRef = useRef();
 
   const handleDownloadPDF = async () => {
@@ -88,7 +89,7 @@ const Dashboard = () => {
           onUpdateInsights(charts); } */}
       {/* .analysis_results.accumulated_sales_planning.predictions 부분 
           이걸 setInsightDataFromChatGpt(charts)로 실행하는 셈 */}
-      <ChatPage onUpdateInsights={setInsightDataFromChatGpt} setStructruedData={setStructuredDataFromChatGpt} setPlanningSummary={setRealInsightFromChatGpt} />
+      <ChatPage onUpdateInsights={setInsightDataFromChatGpt} setStructruedData={setStructuredDataFromChatGpt} setPlanningSummary={setRealInsightFromChatGpt} setAISearchSummary={setAIsearchFromChatGpt}/>
 
       {/* PDF 다운로드 + Dummy 버튼 */}
       <Box display="flex" justifyContent="flex-end" alignItems="center" my={2} gap={2}>
@@ -115,7 +116,7 @@ const Dashboard = () => {
         <Typography variant="h6" fontWeight="bold" mb={3}>
           Insight Report
         </Typography>
-        <InsightChart externalData={insightDataFromChatGpt} externalStructredData={structuredDataFromChatGpt} realInsightFromChatGpt={realInsightFromChatGpt}/>
+        <InsightChart externalData={insightDataFromChatGpt} externalStructredData={structuredDataFromChatGpt} realInsightFromChatGpt={realInsightFromChatGpt} aisearchFromChatGpt={aisearchFromChatGpt}/>
       </Paper>
     </Box>
   );

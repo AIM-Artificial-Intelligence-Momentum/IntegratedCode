@@ -36,6 +36,7 @@ class ChatbotService:
 
         # 상태 정보
         self.collected_vars = {}
+        self.summary = None
         self.last_asked_key = None
         
         # ML API 기본 URL (같은 서버에서 실행 중이라고 가정)
@@ -548,7 +549,7 @@ class ChatbotService:
         # 3. AI 문서 검색
         if intent in ["검색"]:
             summary = self.search.query(user_input)
-            reply_parts.append("📖 관련 문서 요약:\n\n" + summary)
+            # reply_parts.append("📖 관련 문서 요약:\n\n" + summary)
 
         # 4. 응답 및 상태 반환
         full_reply = "\n\n".join(reply_parts)
@@ -561,6 +562,7 @@ class ChatbotService:
             "chat_history": history,
             "response_text": full_reply,
             "structured_data": self.collected_vars,
+            "related_docu" : self.summary,
             "analysis_results": analysis_results,
             "intent": intent,
             "stage": stage,

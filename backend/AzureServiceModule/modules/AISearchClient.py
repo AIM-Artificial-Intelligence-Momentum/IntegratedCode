@@ -1,4 +1,5 @@
 # AzureServiceModule/modules/AISearchClient.py
+from ..util.CleanText import cleanText
 
 class AISearchService:
     def __init__(self, client, deployment, search_key, search_endpoint, search_index):
@@ -41,5 +42,5 @@ class AISearchService:
                 ]
             }
         )
-
-        return response.choices[0].message.content.strip()
+        res = cleanText(response.choices[0].message.content.strip())
+        return res

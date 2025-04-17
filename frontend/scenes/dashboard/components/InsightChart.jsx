@@ -13,7 +13,7 @@ import { renderCharts } from "./chartHelpers";
 import useCsvData from "./hooks/useCsvData";
 import useCsvObserver from "./utils/useCsvObserver";
 
-export default function InsightChart({ onTabChange, externalData, externalStructredData, realInsightFromChatGpt}) {
+export default function InsightChart({ onTabChange, externalData, externalStructredData, realInsightFromChatGpt, aisearchFromChatGpt}) {
   const dataBySection = useCsvData();
   const scenarioTitles = Object.keys(dataBySection);
   const [activeTab, setActiveTab] = useState(0);
@@ -22,6 +22,7 @@ export default function InsightChart({ onTabChange, externalData, externalStruct
   // const [activeChartData, setActiveChartData] = useState([]);
   const [structuredInfo, setStructuredInfo] = useState(null);
   const [realChartData, setRealChartData] = useState(null);
+  const [aiSearchSummary, setAISearchSummary] = useState(null);
 
   // useEffect(() => {
   //   if (externalData && externalData.length > 0) {
@@ -41,10 +42,17 @@ export default function InsightChart({ onTabChange, externalData, externalStruct
     }
   }, [realInsightFromChatGpt]);
 
+  useEffect(() => {
+    if (aisearchFromChatGpt && Object.keys(aisearchFromChatGpt).length > 0) {
+      setAISearchSummary(aisearchFromChatGpt);
+    }
+  }, [aisearchFromChatGpt]);
+
   // 탭 추가(Structured Insights,Real Insights) 
   const extraTabs = [];
-  if (structuredInfo) extraTabs.push("📘 Structured Insights");
-  if (realChartData) extraTabs.push("💃 Real Insights");
+  if (structuredInfo) extraTabs.push("🤖 GPT가 수집한 변수");
+  if (realChartData) extraTabs.push("🖥️ 인사이트 정리");
+  if (aiSearchSummary) extraTabs.push("📖 관련 문서 요약")
   const allTabs = [...scenarioTitles, ...extraTabs];
 
   const handleTabClick = (index) => {
@@ -72,8 +80,9 @@ export default function InsightChart({ onTabChange, externalData, externalStruct
       </Box>
 
       {allTabs.map((title, idx) => {
-        const isStructured = title === "📘 Structured Insights";
-        const isReal = title === "💃 Real Insights";
+        const isStructured = title === "🤖 GPT가 수집한 변수";
+        const isReal = title === "🖥️ 인사이트 정리";
+        const isAISearch = title === "📖 관련 문서 요약";
 
         return (
           <Box
@@ -104,6 +113,31 @@ export default function InsightChart({ onTabChange, externalData, externalStruct
                 }}
               >
                 {JSON.stringify(realChartData, null, 2)}
+              </Box>
+            ) : isAISearch ? (
+              <Box
+                component="pre"
+                sx={{
+                  backgroundColor: "#f0f9ff",
+                  p: 2,
+                  borderRadius: 2,
+                  overflowX: "auto",
+                  fontFamily: "monospace",
+                  whiteSpace: "pre-wrap",
+                }}
+              >
+                {aiSearchSummary
+                  .replace(/\\n/g, "\n")            // \n → 실제 줄바꿈
+                  .split("\n\n")                    // 문단 기준 분리
+                  .map((para, idx) => (
+                    <Typography
+                      key={idx}
+                      variant="body1"
+                      sx={{ mb: 2, whiteSpace: "pre-wrap", fontFamily: "inherit" }}
+                    >
+                      {para}
+                    </Typography>
+                  ))}
               </Box>
             ) : (
               renderCharts(dataBySection[title])

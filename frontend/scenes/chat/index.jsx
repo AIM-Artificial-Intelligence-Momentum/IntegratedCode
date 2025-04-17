@@ -14,7 +14,7 @@ import SendIcon from "@mui/icons-material/Send";
 import ChatIcon from "@mui/icons-material/Chat";
 import CloseIcon from "@mui/icons-material/Close";
 
-export default function ChatPage({ onUpdateInsights, setPlanningSummary, setStructruedData }) {
+export default function ChatPage({ onUpdateInsights, setPlanningSummary, setStructruedData, setAISearchSummary}) {
   const [chatHistory, setChatHistory] = useState([
     {
       role: "assistant",
@@ -54,18 +54,22 @@ export default function ChatPage({ onUpdateInsights, setPlanningSummary, setStru
       setChatHistory((prev) => [...prev, { role: "assistant", content: botReply }]);
       console.log(data);
 
+      if (typeof setStructruedData === "function") {
+        setStructruedData(data.structured_data); //
+      }
+      if (typeof setPlanningSummary === "function") {
+        setPlanningSummary(data.analysis_results);
+      }
+      if (typeof setAISearchSummary === "function") {
+        setAISearchSummary(data.related_docu);
+      }
+
       // 🔥 차트 데이터 연결
       if (data.analysis_results) {
         const charts = data.analysis_results.accumulated_sales_planning?.predictions || [];
 
         if (typeof onUpdateInsights === "function") {
           onUpdateInsights(charts); // 👉 InsightChart.jsx로 데이터 전달
-        }
-        if (typeof setStructruedData === "function") {
-          setStructruedData(data.structured_data); // 👉 InsightChart.jsx로 데이터 전달
-        }
-        if (typeof setPlanningSummary === "function") {
-          setPlanningSummary(data.analysis_results);
         }
       }
     } catch (error) {

@@ -63,7 +63,7 @@ export default function useCsvData() {
         }));
 
         setScenarioData({
-          "집계 시각화": [
+          "🔎 집계 시각화": [
             {
               chartType: "bar-line-combo",
               title: "장르별 공연작수 및 관객수",
@@ -104,7 +104,7 @@ export default function useCsvData() {
               data: venue2024,
             },
           ],
-          "관객 수 예측 – 기획 단계": [
+          "🙋‍♀️ 관객 수 예측 – 기획 단계": [
             {
               chartType: "bar",
               title: "동일 장르 내 과거 공연 관객 수 비교",
@@ -128,8 +128,8 @@ export default function useCsvData() {
               band: { lower: "lower", upper: "upper" },
               data: forecastAudienceProcessed
             }
-          ],
-          "관객 수 예측 – 판매 단계": [
+          ], 
+          "🙋‍♂️ 관객 수 예측 – 판매 단계": [
             {
               chartType: "line-multiple-series",
               title: "일자별 누적 관객 추이 (공연별)",
@@ -158,7 +158,7 @@ export default function useCsvData() {
               data: salesCompare,
             },
           ],
-          "손익 예측 – 기획 단계": [
+          "📊 손익 예측 – 기획 단계": [
             {
               chartType: "line",
               title: "ROI 변화 추이",
@@ -186,7 +186,7 @@ export default function useCsvData() {
               stats: bepBoxplot,
             }
           ],
-          "손익 예측 – 판매 단계": [
+          "📊 손익 예측 – 판매 단계": [
             {
               chartType: "line",
               title: "ROI 변화 추이 (판매 기준)",
@@ -217,7 +217,7 @@ export default function useCsvData() {
               data: predictedAudienceLine,
             }
           ],
-          "티켓 판매 위험 예측 – 판매 단계 조기 경보": [
+          "🚨 티켓 판매 위험 예측 – 판매 단계 조기 경보": [
             {
               chartType: "table",
               title: "과거 공연 리스트 테이블",
