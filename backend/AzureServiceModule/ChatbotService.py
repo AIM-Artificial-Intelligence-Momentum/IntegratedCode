@@ -109,7 +109,7 @@ class ChatbotService:
             "capacity", "star_power", "ticket_price", "marketing_budget", 
             "sns_mention_count", "daily_sales", "booking_rate", "ad_exposure", 
             "sns_mention_daily", "production_cost", "variable_cost_rate", 
-            "accumulated_sales"
+            "accumulated_sales", "duration"
         ]
         
         for field in numeric_fields:
@@ -141,7 +141,8 @@ class ChatbotService:
                 "star_power": formatted_vars.get("star_power", 280.0),
                 "ticket_price": formatted_vars.get("ticket_price", 40439.5),
                 "marketing_budget": formatted_vars.get("marketing_budget", 8098512.5),
-                "sns_mention_count": formatted_vars.get("sns_mention_count", 38.0)
+                "sns_mention_count": formatted_vars.get("sns_mention_count", 38.0),
+                "duration": formatted_vars.get("duration", 1)
             }
             return defaults
         
@@ -158,7 +159,8 @@ class ChatbotService:
                 "daily_sales": formatted_vars.get("daily_sales", 2.0),
                 "booking_rate": formatted_vars.get("booking_rate", 0.7),
                 "ad_exposure": formatted_vars.get("ad_exposure", 303284.5),
-                "sns_mention_daily": formatted_vars.get("sns_mention_daily", 38.0)
+                "sns_mention_daily": formatted_vars.get("sns_mention_daily", 38.0),
+                "duration": formatted_vars.get("duration", 1)
             }
             return defaults
         
@@ -169,7 +171,8 @@ class ChatbotService:
                 "ticket_price": formatted_vars.get("ticket_price", 40349.5),
                 "capacity": formatted_vars.get("capacity", 280.0),
                 "variable_cost_rate": formatted_vars.get("variable_cost_rate", 0.17755),
-                "accumulated_sales": formatted_vars.get("accumulated_sales", 105.0)
+                "accumulated_sales": formatted_vars.get("accumulated_sales", 105.0),
+                "duration": formatted_vars.get("duration", 1)
             }
             return defaults
         
@@ -184,7 +187,8 @@ class ChatbotService:
                 "accumulated_sales": formatted_vars.get("accumulated_sales", 105.0),
                 "ad_exposure": formatted_vars.get("ad_exposure", 303284.5),
                 "sns_mention_daily": formatted_vars.get("sns_mention_daily", 0.0),
-                "promo_event_flag": formatted_vars.get("promo_event_flag", 0)
+                "promo_event_flag": formatted_vars.get("promo_event_flag", 0),
+                "duration": formatted_vars.get("duration", 1)
             }
             return defaults
         

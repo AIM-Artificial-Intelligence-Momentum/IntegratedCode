@@ -18,7 +18,8 @@ dummy_acc_sales_planning_input = [
         "star_power": 4,
         "ticket_price": 80000,
         "marketing_budget": 1000000,
-        "sns_mention_count": 3000
+        "sns_mention_count": 3000,
+        "duration" : 1
     }
 ]
 
@@ -36,7 +37,8 @@ dummy_acc_sales_selling_input = [
         "daily_sales": 100,
         "booking_rate": 65,
         "ad_exposure": 2000,
-        "sns_mention_daily": 50
+        "sns_mention_daily": 50,
+        "duration" : 1
     }
 ]
 
@@ -47,7 +49,8 @@ dummy_roi_bep_planning_input = [
         "marketing_budget": 50000000,
         "ticket_price": 80000,
         "capacity": 1000,
-        "variable_cost_rate": 0.2
+        "variable_cost_rate": 0.2,
+        "duration" : 1
     }
 ]
 
@@ -59,7 +62,8 @@ dummy_roi_bep_selling_input = [
         "ticket_price": 80000,
         "capacity": 1000,
         "variable_cost_rate": 0.2,
-        "accumulated_sales": 50000
+        "accumulated_sales": 50000,
+        "duration" : 1
     }
 ]
 
@@ -75,7 +79,8 @@ dummy_ticket_risk_input = [
         "accumulated_sales": 300,
         "ad_exposure": 2500,
         "sns_mention_daily": 60,
-        "promo_event_flag": 1
+        "promo_event_flag": 1,
+        "duration" : 1
     }
 ]
 
