@@ -6,7 +6,7 @@ from typing import List
 from sklearn.metrics import roc_curve, precision_recall_curve
 from sklearn.preprocessing import label_binarize
 
-from backend.AzureServiceModule.AzureSQLClient import execute_query
+from AzureServiceModule.AzureSQLClient import execute_query
 
 FILE_DIR = os.path.dirname(__file__)
 MODEL_DIR = os.path.join(FILE_DIR, "models")
