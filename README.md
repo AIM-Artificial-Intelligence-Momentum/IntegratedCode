@@ -20,6 +20,7 @@ uvicorn demo:app --reload
 
 ```bash
 cd frontend
+npm install nextjs react react-dom
 npm run dev
 ```
 
